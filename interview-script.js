@@ -13,40 +13,15 @@
 // CONFIGURATION & DATA
 // ========================================
 
-// Sample interview questions based on type
-const questionBank = {
-  hr: [
-    { text: "Tell me about yourself and your background.", keywords: ["background", "experience", "education", "skills"] },
-    { text: "Why do you want to work for our company?", keywords: ["company", "interest", "motivation", "culture"] },
-    { text: "What are your greatest strengths?", keywords: ["strength", "skill", "ability", "expertise"] },
-    { text: "What is your greatest weakness?", keywords: ["weakness", "improve", "challenge", "development"] },
-    { text: "Where do you see yourself in 5 years?", keywords: ["goal", "future", "career", "ambition"] },
-    { text: "Tell me about a time you faced a difficult situation at work.", keywords: ["challenge", "problem", "solution", "resolve"] },
-    { text: "How do you handle stress and pressure?", keywords: ["stress", "pressure", "manage", "cope"] },
-    { text: "Why should we hire you?", keywords: ["value", "contribution", "unique", "benefit"] }
-  ],
-  technical: [
-    { text: "Explain the difference between process and thread.", keywords: ["process", "thread", "memory", "concurrent"] },
-    { text: "What is the difference between REST and GraphQL?", keywords: ["REST", "GraphQL", "API", "query"] },
-    { text: "How would you design a system that handles millions of users?", keywords: ["scale", "architecture", "distributed", "performance"] },
-    { text: "Explain the concept of database normalization.", keywords: ["normalization", "database", "redundancy", "tables"] },
-    { text: "What are microservices and their advantages?", keywords: ["microservices", "architecture", "scalable", "independent"] },
-    { text: "Explain the CAP theorem.", keywords: ["CAP", "consistency", "availability", "partition"] },
-    { text: "What is the difference between SQL and NoSQL databases?", keywords: ["SQL", "NoSQL", "relational", "document"] }
-  ],
-  behavioral: [
-    { text: "Describe a time when you had to work with a difficult team member.", keywords: ["team", "conflict", "communication", "resolve"] },
-    { text: "Tell me about a project where you demonstrated leadership.", keywords: ["leadership", "lead", "initiative", "responsibility"] },
-    { text: "Give an example of a time you failed and what you learned.", keywords: ["failure", "mistake", "learn", "improve"] },
-    { text: "Describe a situation where you had to meet a tight deadline.", keywords: ["deadline", "pressure", "time", "prioritize"] },
-    { text: "Tell me about a time you had to adapt to a significant change.", keywords: ["change", "adapt", "flexible", "adjust"] },
-    { text: "Describe a time when you went above and beyond.", keywords: ["exceed", "extra", "initiative", "dedication"] },
-    { text: "Tell me about a time you had to persuade someone.", keywords: ["persuade", "convince", "influence", "negotiate"] }
-  ]
-};
+// Questions loaded from JSON file
+let allQuestions = [];
 
-// Default questions if no level selected
-const defaultQuestions = questionBank.hr;
+// Default questions if loading fails
+const defaultQuestions = [
+  { text: "Tell me about yourself and your background.", keywords: ["background", "experience", "education", "skills"] },
+  { text: "Why do you want to work for our company?", keywords: ["company", "interest", "motivation", "culture"] },
+  { text: "What are your greatest strengths?", keywords: ["strength", "skill", "ability", "expertise"] }
+];
 
 // ========================================
 // DOM ELEMENTS
@@ -62,11 +37,10 @@ const transcriptEl = document.getElementById('transcript');
 const wordCountEl = document.getElementById('wordCount');
 const listeningIndicatorEl = document.getElementById('listeningIndicator');
 
-const startAnswerBtn = document.getElementById('startAnswerBtn');
-const stopAnswerBtn = document.getElementById('stopAnswerBtn');
 const clearAnswerBtn = document.getElementById('clearAnswerBtn');
 const prevQuestionBtn = document.getElementById('prevQuestionBtn');
 const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+const submitNextBtn = document.getElementById('submitNextBtn');
 const submitInterviewBtn = document.getElementById('submitInterviewBtn');
 const camToggleBtn = document.getElementById('camToggleBtn');
 const micToggleBtn = document.getElementById('micToggleBtn');
@@ -84,6 +58,7 @@ let state = {
   currentQuestionIndex: 0,
   questions: [],
   answers: [],
+  responses: [],
   mediaStream: null,
   recognition: null,
   isRecording: false,
@@ -97,22 +72,73 @@ let state = {
 // INITIALIZATION
 // ========================================
 
-function init() {
+async function loadQuestionsFromJSON() {
+  try {
+    const response = await fetch('data/questions.json');
+    if (!response.ok) {
+      throw new Error('Failed to load questions');
+    }
+    allQuestions = await response.json();
+    console.log('Loaded questions from JSON:', allQuestions.length);
+  } catch (error) {
+    console.error('Error loading questions:', error);
+    // Use default questions as fallback
+    allQuestions = defaultQuestions.map((q, idx) => ({
+      id: idx + 1,
+      domain: 'HR',
+      question: q.text,
+      ideal_answer: '',
+      keywords: q.keywords
+    }));
+  }
+}
+
+function filterQuestionsByDomain(domain) {
+  // Normalize domain name
+  const domainMap = {
+    'hr': 'HR',
+    'technical': 'Technical',
+    'behavioral': 'Behavioral',
+    'coding': 'Coding'
+  };
+  
+  const normalizedDomain = domainMap[domain.toLowerCase()] || 'HR';
+  
+  // Filter questions by domain
+  const filtered = allQuestions.filter(q => q.domain === normalizedDomain);
+  
+  return filtered.length > 0 ? filtered : allQuestions.slice(0, 5);
+}
+
+async function init() {
+  // Load questions from JSON file
+  await loadQuestionsFromJSON();
+  
   // Get interview level from localStorage
   state.interviewLevel = localStorage.getItem('interviewLevel') || 'hr';
-  state.questions = questionBank[state.interviewLevel] || defaultQuestions;
+  
+  // Filter questions by selected domain
+  state.questions = filterQuestionsByDomain(state.interviewLevel);
+  
+  console.log('Selected domain:', state.interviewLevel);
+  console.log('Filtered questions:', state.questions.length);
   
   // Initialize answers array
   state.answers = state.questions.map(q => ({
-    question: q.text,
+    questionId: q.id,
+    question: q.question,
     keywords: q.keywords,
     answer: '',
     wordCount: 0,
     relevance: null,
     clarity: null,
     completeness: null,
-    feedback: ''
+    feedback: '',
+    submitted: false
   }));
+  
+  // Initialize responses array for feedback
+  state.responses = [];
   
   // Load first question
   loadQuestion(0);
@@ -134,11 +160,67 @@ function init() {
 }
 
 // ========================================
+// PERMISSION CHECKING
+// ========================================
+
+async function checkCameraPermission() {
+  try {
+    // Try to query camera permission if Permissions API is available
+    if (navigator.permissions && navigator.permissions.query) {
+      try {
+        const result = await navigator.permissions.query({ name: 'camera' });
+        return result.state; // 'granted', 'denied', or 'prompt'
+      } catch (e) {
+        // Permissions API might not support camera on all browsers
+        console.log('Permissions API not fully supported, will attempt direct access');
+      }
+    }
+    // If Permissions API unavailable, return 'prompt' to attempt access
+    return 'prompt';
+  } catch (error) {
+    console.error('Permission check error:', error);
+    return 'prompt';
+  }
+}
+
+async function checkMicrophonePermission() {
+  try {
+    // Try to query microphone permission if Permissions API is available
+    if (navigator.permissions && navigator.permissions.query) {
+      try {
+        const result = await navigator.permissions.query({ name: 'microphone' });
+        return result.state; // 'granted', 'denied', or 'prompt'
+      } catch (e) {
+        // Permissions API might not support microphone on all browsers
+        console.log('Permissions API not fully supported, will attempt direct access');
+      }
+    }
+    // If Permissions API unavailable, return 'prompt' to attempt access
+    return 'prompt';
+  } catch (error) {
+    console.error('Permission check error:', error);
+    return 'prompt';
+  }
+}
+
+// ========================================
 // CAMERA FUNCTIONALITY
 // ========================================
 
 async function initCamera() {
   try {
+    // Check permission before attempting to access camera
+    const permissionState = await checkCameraPermission();
+    
+    if (permissionState === 'denied') {
+      throw new Error('NotAllowedError');
+    }
+    
+    // Check if getUserMedia is supported
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('NotSupportedError');
+    }
+    
     state.mediaStream = await navigator.mediaDevices.getUserMedia({
       video: { width: 1280, height: 720 },
       audio: false
@@ -149,12 +231,57 @@ async function initCamera() {
     camToggleBtn.classList.add('active');
     cameraErrorEl.style.display = 'none';
     
+    // Enable interview controls when camera is successfully initialized
+    enableInterviewControls();
+    
   } catch (error) {
     console.error('Camera access error:', error);
     cameraErrorEl.style.display = 'flex';
     camToggleBtn.classList.remove('active');
-    updateStatus('Camera unavailable');
+    state.isCameraOn = false;
+    
+    // Handle specific error types
+    let errorMessage = 'Camera access is required to attend the interview.';
+    
+    if (error.name === 'NotAllowedError' || error.message === 'NotAllowedError') {
+      errorMessage = 'Camera access is required to attend the interview. Please enable it in browser settings and refresh the page.';
+      cameraErrorEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Camera access denied</p>';
+      updateStatus('Camera access denied');
+    } else if (error.name === 'NotFoundError') {
+      errorMessage = 'No camera found. Please connect a camera device and refresh the page.';
+      cameraErrorEl.innerHTML = '<i class="fas fa-video-slash"></i><p>No camera found</p>';
+      updateStatus('No camera found');
+    } else if (error.name === 'NotReadableError') {
+      errorMessage = 'Camera is already in use by another application. Please close other applications and refresh the page.';
+      cameraErrorEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Camera in use</p>';
+      updateStatus('Camera in use');
+    } else if (error.name === 'NotSupportedError' || error.message === 'NotSupportedError') {
+      errorMessage = 'Camera is not supported in this browser. Please use Chrome, Edge, or Firefox.';
+      cameraErrorEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Browser not supported</p>';
+      updateStatus('Browser not supported');
+    } else {
+      cameraErrorEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Camera unavailable</p>';
+      updateStatus('Camera unavailable');
+    }
+    
+    // Show clear popup message
+    alert(errorMessage);
+    
+    // Disable interview controls until camera is enabled
+    disableInterviewControls();
   }
+}
+
+function disableInterviewControls() {
+  micToggleBtn.disabled = true;
+  transcriptEl.disabled = true;
+  submitInterviewBtn.disabled = true;
+}
+
+function enableInterviewControls() {
+  micToggleBtn.disabled = false;
+  transcriptEl.disabled = false;
+  submitInterviewBtn.disabled = false;
 }
 
 function toggleCamera() {
@@ -168,9 +295,16 @@ function toggleCamera() {
     camToggleBtn.classList.remove('active');
     cameraErrorEl.style.display = 'flex';
     cameraErrorEl.innerHTML = '<i class="fas fa-camera-slash"></i><p>Camera is off</p>';
+    
+    // Show popup and disable controls
+    alert('Camera access is required to attend the interview. Please enable the camera to continue.');
+    disableInterviewControls();
   } else {
     // Turn on camera
     initCamera();
+    if (state.isCameraOn) {
+      enableInterviewControls();
+    }
   }
 }
 
@@ -184,8 +318,8 @@ function initSpeechRecognition() {
   
   if (!SpeechRecognition) {
     console.error('Speech recognition not supported');
-    startAnswerBtn.disabled = true;
-    startAnswerBtn.title = 'Speech recognition not supported in this browser';
+    micToggleBtn.disabled = true;
+    micToggleBtn.title = 'Speech recognition not supported in this browser';
     return;
   }
   
@@ -197,8 +331,6 @@ function initSpeechRecognition() {
   state.recognition.onstart = () => {
     state.isRecording = true;
     listeningIndicatorEl.style.display = 'flex';
-    startAnswerBtn.disabled = true;
-    stopAnswerBtn.disabled = false;
     micToggleBtn.classList.add('active');
     updateStatus('Listening...');
   };
@@ -226,8 +358,25 @@ function initSpeechRecognition() {
   
   state.recognition.onerror = (event) => {
     console.error('Speech recognition error:', event.error);
+    
+    // Handle specific speech recognition errors
+    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+      alert('Microphone access is required for voice answers. Please enable it in browser settings.');
+      updateStatus('Microphone access denied');
+    } else if (event.error === 'no-speech') {
+      console.log('No speech detected, continuing...');
+      return; // Don't stop recording for no-speech
+    } else if (event.error === 'audio-capture') {
+      alert('Microphone is not working. Please check your device and try again.');
+      updateStatus('Microphone error');
+    } else if (event.error === 'network') {
+      alert('Network error. Speech recognition may not work offline.');
+      updateStatus('Network error');
+    } else {
+      updateStatus('Speech error: ' + event.error);
+    }
+    
     stopRecording();
-    updateStatus('Error: ' + event.error);
   };
   
   state.recognition.onend = () => {
@@ -238,16 +387,66 @@ function initSpeechRecognition() {
   };
 }
 
-function startRecording() {
+async function startRecording() {
   if (!state.recognition) {
     alert('Speech recognition is not available in your browser. Please type your answer.');
     return;
   }
   
   try {
-    state.recognition.start();
+    // Check permission before attempting to access microphone
+    const permissionState = await checkMicrophonePermission();
+    
+    if (permissionState === 'denied') {
+      throw new Error('NotAllowedError');
+    }
+    
+    // Check if getUserMedia is supported
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('NotSupportedError');
+    }
+    
+    // Test microphone access
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // Microphone access granted, stop the test stream
+    stream.getTracks().forEach(track => track.stop());
+    
+    // Now start speech recognition
+    try {
+      state.recognition.start();
+    } catch (speechError) {
+      console.error('Speech recognition start error:', speechError);
+      // Handle case where recognition is already started
+      if (speechError.message && speechError.message.includes('already started')) {
+        console.log('Speech recognition already active');
+      } else {
+        throw speechError;
+      }
+    }
   } catch (error) {
-    console.error('Error starting recognition:', error);
+    console.error('Microphone access error:', error);
+    
+    // Handle specific error types
+    let errorMessage = 'Microphone access is required for voice answers.';
+    
+    if (error.name === 'NotAllowedError' || error.message === 'NotAllowedError') {
+      errorMessage = 'Microphone access is required for voice answers. Please enable it in browser settings and refresh the page.';
+      updateStatus('Microphone access denied');
+    } else if (error.name === 'NotFoundError') {
+      errorMessage = 'No microphone found. Please connect a microphone device and refresh the page.';
+      updateStatus('No microphone found');
+    } else if (error.name === 'NotReadableError') {
+      errorMessage = 'Microphone is already in use by another application. Please close other applications and try again.';
+      updateStatus('Microphone in use');
+    } else if (error.name === 'NotSupportedError' || error.message === 'NotSupportedError') {
+      errorMessage = 'Microphone is not supported in this browser. Please use Chrome, Edge, or Firefox.';
+      updateStatus('Browser not supported');
+    } else {
+      errorMessage = 'Microphone access failed. You can type your answer instead.';
+      updateStatus('Microphone unavailable');
+    }
+    
+    alert(errorMessage);
   }
 }
 
@@ -256,8 +455,6 @@ function stopRecording() {
     state.isRecording = false;
     state.recognition.stop();
     listeningIndicatorEl.style.display = 'none';
-    startAnswerBtn.disabled = false;
-    stopAnswerBtn.disabled = true;
     micToggleBtn.classList.remove('active');
     updateStatus('Processing answer...');
     
@@ -282,9 +479,27 @@ function loadQuestion(index) {
   const answer = state.answers[index];
   
   // Update UI
-  questionTextEl.textContent = question.text;
+  questionTextEl.textContent = question.question;
   questionNumberEl.textContent = index + 1;
   transcriptEl.value = answer.answer;
+  
+  // Check if this question was already submitted
+  if (answer.submitted) {
+    // Lock the answer input
+    transcriptEl.disabled = true;
+    micToggleBtn.disabled = true;
+    clearAnswerBtn.disabled = true;
+    submitNextBtn.disabled = true;
+    submitNextBtn.textContent = 'Answer Submitted';
+    submitNextBtn.innerHTML = '<i class="fas fa-check"></i><span>Answer Submitted</span>';
+  } else {
+    // Unlock the answer input
+    transcriptEl.disabled = false;
+    micToggleBtn.disabled = false;
+    clearAnswerBtn.disabled = false;
+    submitNextBtn.disabled = false;
+    submitNextBtn.innerHTML = '<i class="fas fa-arrow-right"></i><span>Submit & Next</span>';
+  }
   
   // Update navigation buttons
   prevQuestionBtn.disabled = index === 0;
@@ -305,13 +520,13 @@ function prevQuestion() {
   loadQuestion(state.currentQuestionIndex - 1);
 }
 
-function saveCurrentAnswer() {
+async function saveCurrentAnswer() {
   const answer = state.answers[state.currentQuestionIndex];
   answer.answer = transcriptEl.value.trim();
   answer.wordCount = countWords(answer.answer);
   
   // Analyze answer
-  const analysis = analyzeAnswerQuality(answer.answer, answer.keywords);
+  const analysis = await analyzeAnswerQuality(answer.answer, answer.keywords);
   answer.relevance = analysis.relevance;
   answer.clarity = analysis.clarity;
   answer.completeness = analysis.completeness;
@@ -331,7 +546,7 @@ function updateWordCount() {
   wordCountEl.textContent = count;
 }
 
-function analyzeAnswer() {
+async function analyzeAnswer() {
   const answer = transcriptEl.value.trim();
   const keywords = state.questions[state.currentQuestionIndex].keywords;
   
@@ -343,7 +558,7 @@ function analyzeAnswer() {
     return;
   }
   
-  const analysis = analyzeAnswerQuality(answer, keywords);
+  const analysis = await analyzeAnswerQuality(answer, keywords);
   
   // Update scores
   relevanceScoreEl.textContent = analysis.relevance + '/10';
@@ -352,17 +567,76 @@ function analyzeAnswer() {
   feedbackTextEl.innerHTML = `<i class="fas fa-robot"></i> ${analysis.feedback}`;
 }
 
-function analyzeAnswerQuality(answer, keywords) {
+async function analyzeAnswerQuality(answer, keywords) {
   const wordCount = countWords(answer);
+  const question = state.questions[state.currentQuestionIndex].question;
+  
+  // Try to call Node.js backend API
+  try {
+    const response = await fetch('http://localhost:5000/api/evaluation/evaluate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        answer: answer,
+        keywords: keywords,
+        idealWordCount: 100
+      })
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      const evaluation = result.data;
+      
+      // Convert scores (0-100) to 0-10 scale
+      const relevance = Math.round(evaluation.scores.relevance / 10);
+      const clarity = Math.round(evaluation.scores.clarity / 10);
+      const completeness = Math.round(evaluation.scores.completeness / 10);
+      
+      const matchedKeywords = (evaluation.keywordMatches || [])
+        .filter(k => k.found)
+        .map(k => k.keyword);
+      const missingKeywords = (evaluation.keywordMatches || [])
+        .filter(k => !k.found)
+        .map(k => k.keyword);
+      
+      return {
+        relevance,
+        clarity,
+        completeness,
+        feedback: evaluation.feedback,
+        relevancePercentage: evaluation.scores.overall,
+        matchedKeywords,
+        missingKeywords
+      };
+    }
+  } catch (error) {
+    console.log('Backend not available, using local evaluation');
+  }
+  
+  // Fallback to local evaluation if backend is unavailable
   const lowerAnswer = answer.toLowerCase();
   
   // Relevance: Check keyword matches
   let keywordMatches = 0;
+  const matchedKeywords = [];
+  const missingKeywords = [];
+  
   keywords.forEach(keyword => {
     if (lowerAnswer.includes(keyword.toLowerCase())) {
       keywordMatches++;
+      matchedKeywords.push(keyword);
+    } else {
+      missingKeywords.push(keyword);
     }
   });
+  
+  // Calculate relevance percentage
+  const relevancePercentage = keywords.length > 0 
+    ? Math.round((keywordMatches / keywords.length) * 100) 
+    : 0;
+  
   const relevance = Math.min(10, Math.round((keywordMatches / keywords.length) * 10) + 2);
   
   // Clarity: Based on sentence structure and length
@@ -412,7 +686,15 @@ function analyzeAnswerQuality(answer, keywords) {
     feedback = 'Good answer! Keep practicing to improve further.';
   }
   
-  return { relevance, clarity, completeness, feedback: feedback.trim() };
+  return { 
+    relevance, 
+    clarity, 
+    completeness, 
+    feedback: feedback.trim(),
+    relevancePercentage,
+    matchedKeywords,
+    missingKeywords
+  };
 }
 
 // ========================================
@@ -457,7 +739,7 @@ function handleTimeUp() {
   }
   
   // Disable inputs
-  startAnswerBtn.disabled = true;
+  micToggleBtn.disabled = true;
   transcriptEl.disabled = true;
   
   // Show message
@@ -560,23 +842,103 @@ function clearAnswer() {
   }
 }
 
+async function handleSubmitNext() {
+  const currentAnswer = transcriptEl.value.trim();
+  
+  // Validate that an answer is present
+  if (!currentAnswer || currentAnswer.length === 0) {
+    alert('Please provide an answer before moving to the next question. You can type your answer or use the microphone to record it.');
+    return;
+  }
+  
+  // Stop recording if currently recording
+  if (state.isRecording) {
+    stopRecording();
+  }
+  
+  // Save the current answer
+  await saveCurrentAnswer();
+  
+  // Get current question and answer data
+  const currentQuestion = state.questions[state.currentQuestionIndex];
+  const currentAnswerData = state.answers[state.currentQuestionIndex];
+  
+  // Evaluate the answer with keyword matching
+  const evaluation = await analyzeAnswerQuality(currentAnswer, currentQuestion.keywords);
+  
+  // Store response for feedback page
+  state.responses.push({
+    question: currentQuestion.question,
+    userAnswer: currentAnswer,
+    keywords: currentQuestion.keywords,
+    matchedKeywords: evaluation.matchedKeywords,
+    missingKeywords: evaluation.missingKeywords,
+    relevanceScore: evaluation.relevancePercentage,
+    relevance: evaluation.relevance,
+    clarity: evaluation.clarity,
+    completeness: evaluation.completeness,
+    feedback: evaluation.feedback
+  });
+  
+  // Mark as submitted and lock the input
+  state.answers[state.currentQuestionIndex].submitted = true;
+  transcriptEl.disabled = true;
+  micToggleBtn.disabled = true;
+  clearAnswerBtn.disabled = true;
+  submitNextBtn.disabled = true;
+  submitNextBtn.innerHTML = '<i class="fas fa-check"></i><span>Answer Submitted</span>';
+  
+  // Auto-advance to next question after a brief delay
+  setTimeout(() => {
+    const nextIndex = state.currentQuestionIndex + 1;
+    
+    if (nextIndex < state.questions.length) {
+      // Move to next question
+      loadQuestion(nextIndex);
+    } else {
+      // Last question - store responses and redirect to feedback
+      localStorage.setItem('interviewResponses', JSON.stringify(state.responses));
+      alert('You have completed all questions! Redirecting to feedback page...');
+      
+      // Redirect to feedback page
+      setTimeout(() => {
+        window.location.href = 'feedback.html';
+      }, 1000);
+    }
+  }, 500);
+}
+
+// ========================================
+// MICROPHONE TOGGLE
+// ========================================
+
+function toggleMicrophone() {
+  if (state.isRecording) {
+    stopRecording();
+  } else {
+    startRecording();
+  }
+}
+
 // ========================================
 // EVENT LISTENERS
 // ========================================
 
 function setupEventListeners() {
   // Recording controls
-  startAnswerBtn.addEventListener('click', startRecording);
-  stopAnswerBtn.addEventListener('click', stopRecording);
   clearAnswerBtn.addEventListener('click', clearAnswer);
   
   // Navigation
   prevQuestionBtn.addEventListener('click', prevQuestion);
   nextQuestionBtn.addEventListener('click', nextQuestion);
+  submitNextBtn.addEventListener('click', handleSubmitNext);
   submitInterviewBtn.addEventListener('click', submitInterview);
   
   // Camera toggle
   camToggleBtn.addEventListener('click', toggleCamera);
+  
+  // Microphone toggle for speech recording
+  micToggleBtn.addEventListener('click', toggleMicrophone);
   
   // Transcript changes
   transcriptEl.addEventListener('input', () => {

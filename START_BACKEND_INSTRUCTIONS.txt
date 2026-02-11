@@ -1,0 +1,74 @@
+================================================================================
+🚀 HOW TO START YOUR AI MOCK INTERVIEW APPLICATION
+================================================================================
+
+⚠️  CRITICAL: DO NOT USE VS CODE SIMPLE BROWSER!
+   VS Code's internal browser blocks camera and microphone.
+   You MUST use Chrome, Edge, or Firefox (external browser).
+
+================================================================================
+STEP 1: START THE BACKEND
+================================================================================
+
+Choose ONE backend to run:
+
+PYTHON BACKEND (Flask):
+  1. Open Terminal in VS Code
+  2. Run: cd python_backend
+  3. Run: python app.py
+  4. Keep terminal open - you'll see: http://localhost:5000
+
+NODE BACKEND (Express):
+  1. Open Terminal in VS Code
+  2. Run: cd backend
+  3. Run: npm install (first time only)
+  4. Run: npm start
+  5. Keep terminal open - you'll see: http://localhost:5000
+
+================================================================================
+STEP 2: START THE FRONTEND SERVER (if needed)
+================================================================================
+
+If your frontend files need a server:
+
+  1. Open NEW Terminal in VS Code
+  2. Run: python -m http.server 8000
+  3. Keep this terminal open too
+
+================================================================================
+STEP 3: OPEN IN EXTERNAL BROWSER
+================================================================================
+
+  1. Open Chrome or Edge (external application, NOT in VS Code)
+  2. Navigate to: http://localhost:8000
+  3. **Grant camera and microphone permissions when prompted**
+  4. Your app should now work with full camera/mic access!
+
+================================================================================
+VERIFICATION
+================================================================================
+
+✅ Backend terminal is running and shows: http://localhost:5000
+✅ Frontend opened in CHROME or EDGE (not VS Code)
+✅ URL bar shows: http://localhost:8000 (not file:///)
+✅ Camera/microphone permissions granted
+✅ No CORS errors in browser console (F12)
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+❌ Camera blocked?
+   → You're in VS Code Simple Browser. Close it. Use Chrome/Edge instead.
+
+❌ CORS error?
+   → Backend must be running. Check the terminal.
+   → Frontend must use http:// not file:///
+
+❌ Backend not starting?
+   → Check if port 5000 is already in use
+   → Try stopping other apps using port 5000
+
+================================================================================
+REMEMBER: Backend in Terminal + Frontend in External Browser = Success! 🎉
+================================================================================

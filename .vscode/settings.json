@@ -1,0 +1,34 @@
+{
+  // ============================================
+  // PREVENT VS CODE FROM AUTO-OPENING BROWSER
+  // ============================================
+  // Disable all auto-forwarding and browser opening
+  "remote.autoForwardPorts": false,
+  "remote.autoForwardPortsSource": "output",
+  
+  // Disable link detection in terminal output to prevent auto-open
+  "terminal.integrated.enableLinks": false,
+  
+  // Prevent automatic port forwarding notifications
+  "remote.portsAttributes": {
+    "5000": {
+      "label": "Backend API",
+      "onAutoForward": "ignore"
+    },
+    "8000": {
+      "label": "Frontend Server",
+      "onAutoForward": "ignore"
+    }
+  },
+  
+  // Disable Simple Browser and Live Preview
+  "livePreview.autoRefreshPreview": "never",
+  "livePreview.portNumber": 0,
+  
+  // Disable debug auto-open browser
+  "debug.javascript.autoAttachFilter": "disabled",
+  
+  // Python settings
+  "python.terminal.activateEnvironment": false,
+  "python.terminal.executeInFileDir": false
+}
