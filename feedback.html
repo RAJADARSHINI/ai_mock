@@ -3,145 +3,624 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interview Feedback - AI Mock Interview System</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+  <title>Interview Results - AI Interview Test</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0A0F1C;
+      color: #FFFFFF;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Animated Blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.06;
+      pointer-events: none;
+      animation: blob-float 8s infinite ease-in-out;
+      z-index: 1;
+    }
+
+    .blob-1 {
+      width: 500px;
+      height: 500px;
+      background: #6366F1;
+      left: -250px;
+      top: 10%;
+    }
+
+    .blob-2 {
+      width: 400px;
+      height: 400px;
+      background: #10B981;
+      right: -200px;
+      bottom: 10%;
+      animation-delay: 2s;
+    }
+
+    @keyframes blob-float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -30px); }
+    }
+
+    /* Top Bar */
+    .topbar {
+      background: rgba(17, 24, 39, 0.98);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 100;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366F1 0%, #10B981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Main Container */
+    .container {
+      flex: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 40px 32px;
+      position: relative;
+      z-index: 10;
+      overflow-y: auto;
+    }
+
+    /* Header Section */
+    .result-header {
+      text-align: center;
+      margin-bottom: 50px;
+      animation: slideInUp 500ms ease-out;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: bounce 600ms ease-out;
+    }
+
+    @keyframes bounce {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .result-title {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #6366F1 0%, #10B981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .result-subtitle {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Score Card */
+    .score-card {
+      background: rgba(17, 24, 39, 0.95);
+      border: 2px solid rgba(99, 102, 241, 0.3);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 20px;
+      animation: fadeIn 600ms ease-out 200ms both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .score-item {
+      text-align: center;
+      padding: 20px;
+      background: rgba(99, 102, 241, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(99, 102, 241, 0.15);
+    }
+
+    .score-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .score-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #6366F1;
+    }
+
+    .score-unit {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-left: 4px;
+    }
+
+    /* Performance Breakdown */
+    .breakdown-section {
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      animation: fadeIn 600ms ease-out 400ms both;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #FFFFFF;
+    }
+
+    .performance-item {
+      padding: 16px;
+      background: rgba(99, 102, 241, 0.03);
+      border-left: 3px solid #6366F1;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .item-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .progress-bar {
+      width: 100px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6366F1, #10B981);
+      border-radius: 3px;
+    }
+
+    /* Answers Review */
+    .answers-section {
+      animation: fadeIn 600ms ease-out 600ms both;
+    }
+
+    .answer-card {
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      transition: all 200ms ease;
+    }
+
+    .answer-card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      background: rgba(17, 24, 39, 0.99);
+    }
+
+    .answer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    .answer-question {
+      font-size: 14px;
+      font-weight: 600;
+      color: #FFFFFF;
+      max-width: 85%;
+    }
+
+    .answer-badge {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #6366F1;
+      white-space: nowrap;
+    }
+
+    .answer-body {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.7;
+      padding: 12px;
+      background: rgba(99, 102, 241, 0.03);
+      border-radius: 8px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .answer-feedback {
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(16, 185, 129, 0.05);
+      border-left: 3px solid #10B981;
+      border-radius: 6px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: slideInUp 500ms ease-out 800ms both;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 200ms ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366F1 0%, #7C3AED 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.3);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .result-title {
+        font-size: 28px;
+      }
+
+      .result-icon {
+        font-size: 60px;
+      }
+
+      .score-card {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .answer-header {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .answer-badge {
+        align-self: flex-start;
+      }
+    }
+  </style>
 </head>
-<body class="dark">
-  <header class="topbar">
-    <div class="brand">
-      <i class="fas fa-brain"></i>
-      AI Mock Interview System
-    </div>
-    <div class="user-info">
-      <i class="fas fa-user-circle"></i>
-      <span id="userEmail">User</span>
-    </div>
-  </header>
+<body>
+  <!-- Animated Blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
 
-  <main class="feedback-container">
-    <div class="feedback-header">
-      <div class="feedback-title">
-        <i class="fas fa-clipboard-check"></i>
-        <h1>Interview Feedback Report</h1>
-      </div>
-      <p class="report-subtitle">Comprehensive analysis of your interview performance</p>
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="brand-title">🧠 AI Interview Test Results</div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Result Header -->
+    <div class="result-header">
+      <div class="result-icon">🎉</div>
+      <div class="result-title">Interview Completed!</div>
+      <div class="result-subtitle">Great job! Here's your detailed performance analysis</div>
     </div>
 
-    <!-- Overall Score Cards -->
-    <section class="overall-scores">
-      <div class="score-card">
-        <div class="score-icon">
-          <i class="fas fa-bullseye"></i>
-        </div>
-        <div class="score-content">
-          <label>Overall Relevance</label>
-          <div class="score-value" id="overallRelevance">—</div>
-          <div class="score-bar">
-            <div class="score-fill" id="relevanceBar"></div>
-          </div>
+    <!-- Score Card -->
+    <div class="score-card">
+      <div class="score-item">
+        <div class="score-label">Overall Score</div>
+        <div>
+          <span class="score-value" id="overallScore">82</span>
+          <span class="score-unit">%</span>
         </div>
       </div>
+      <div class="score-item">
+        <div class="score-label">Communication</div>
+        <div>
+          <span class="score-value" id="commScore">85</span>
+          <span class="score-unit">%</span>
+        </div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">Technical Knowledge</div>
+        <div>
+          <span class="score-value" id="techScore">78</span>
+          <span class="score-unit">%</span>
+        </div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">Professionalism</div>
+        <div>
+          <span class="score-value" id="profScore">88</span>
+          <span class="score-unit">%</span>
+        </div>
+      </div>
+    </div>
 
-      <div class="score-card">
-        <div class="score-icon">
-          <i class="fas fa-comments"></i>
+    <!-- Performance Breakdown -->
+    <div class="breakdown-section">
+      <div class="section-title">
+        📊 Performance Breakdown
+      </div>
+      <div class="performance-item">
+        <div>
+          <div class="item-name">Response Quality</div>
         </div>
-        <div class="score-content">
-          <label>Overall Clarity</label>
-          <div class="score-value" id="overallClarity">—</div>
-          <div class="score-bar">
-            <div class="score-fill" id="clarityBar"></div>
+        <div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 82%;"></div>
           </div>
         </div>
       </div>
+      <div class="performance-item">
+        <div>
+          <div class="item-name">Answer Completeness</div>
+        </div>
+        <div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 85%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="performance-item">
+        <div>
+          <div class="item-name">Time Management</div>
+        </div>
+        <div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 90%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="performance-item">
+        <div>
+          <div class="item-name">Clarity & Articulation</div>
+        </div>
+        <div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 78%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      <div class="score-card">
-        <div class="score-icon">
-          <i class="fas fa-check-double"></i>
-        </div>
-        <div class="score-content">
-          <label>Overall Completeness</label>
-          <div class="score-value" id="overallCompleteness">—</div>
-          <div class="score-bar">
-            <div class="score-fill" id="completenessBar"></div>
-          </div>
-        </div>
+    <!-- Answers Review -->
+    <div class="answers-section">
+      <div class="section-title">
+        📝 Your Answers Review
       </div>
-    </section>
-
-    <!-- Summary Stats -->
-    <section class="summary-stats">
-      <h2><i class="fas fa-chart-bar"></i> Interview Summary</h2>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <div class="stat-icon"><i class="fas fa-question"></i></div>
-          <div class="stat-content">
-            <label>Questions Answered</label>
-            <div class="stat-value" id="totalQuestions">0</div>
-          </div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-icon"><i class="fas fa-font"></i></div>
-          <div class="stat-content">
-            <label>Total Words</label>
-            <div class="stat-value" id="totalWords">0</div>
-          </div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-icon"><i class="fas fa-calculator"></i></div>
-          <div class="stat-content">
-            <label>Average Answer Length</label>
-            <div class="stat-value" id="avgWords">0</div>
-          </div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-icon"><i class="fas fa-clock"></i></div>
-          <div class="stat-content">
-            <label>Interview Duration</label>
-            <div class="stat-value" id="duration">—</div>
-          </div>
-        </div>
+      <div id="answersContainer">
+        <!-- Dynamically populated -->
       </div>
-    </section>
-
-    <!-- Question-wise Feedback -->
-    <section class="question-feedback">
-      <h2><i class="fas fa-list-alt"></i> Question-wise Feedback</h2>
-      <div id="questionFeedbackList" class="feedback-list">
-        <!-- Populated by JavaScript -->
-      </div>
-    </section>
-
-    <!-- Final Feedback -->
-    <section class="final-feedback">
-      <h2><i class="fas fa-lightbulb"></i> Overall Assessment</h2>
-      <div class="final-feedback-box" id="finalFeedback">
-        <p>Loading feedback...</p>
-      </div>
-    </section>
+    </div>
 
     <!-- Action Buttons -->
-    <section class="action-buttons">
-      <button id="restartBtn" class="btn-action">
-        <i class="fas fa-redo"></i>
-        <span>Restart Interview</span>
+    <div class="action-buttons">
+      <button class="btn btn-primary" onclick="retakeInterview()">
+        🔄 Retake Interview
       </button>
-      <button id="levelsBtn" class="btn-action btn-secondary">
-        <i class="fas fa-th-large"></i>
-        <span>Go to Levels</span>
+      <button class="btn btn-secondary" onclick="downloadReport()">
+        📥 Download Report
       </button>
-      <button id="printBtn" class="btn-action btn-secondary">
-        <i class="fas fa-print"></i>
-        <span>Print Report</span>
+      <button class="btn btn-secondary" onclick="goToDashboard()">
+        🏠 Back to Dashboard
       </button>
-    </section>
-  </main>
+    </div>
+  </div>
 
-  <footer class="footer">
-    <p>AI Mock Interview System - Frontend Demo | Engineering Project</p>
-  </footer>
+  <!-- Footer -->
+  <div class="footer">
+    <p>Interview completed on <span id="completedTime"></span> | Report saved to your account</p>
+  </div>
 
-  <script src="feedback.js"></script>
+  <script>
+    // Initialize results
+    function initResults() {
+      const answers = JSON.parse(localStorage.getItem('interviewAnswers') || '[]');
+      const completedAt = localStorage.getItem('completedAt');
+
+      if (answers.length === 0) {
+        window.location.href = 'interview.html';
+        return;
+      }
+
+      // Display completion time
+      if (completedAt) {
+        const date = new Date(completedAt);
+        document.getElementById('completedTime').textContent = date.toLocaleString();
+      }
+
+      // Calculate scores
+      const scores = calculateScores(answers);
+      updateScores(scores);
+
+      // Display answers
+      displayAnswers(answers);
+    }
+
+    function calculateScores(answers) {
+      const baseScore = 75;
+      const completenessBonus = Math.min(answers.length * 2, 10);
+      const qualityBonus = Math.floor(Math.random() * 10) + 5; // Simulated AI analysis
+      
+      return {
+        overall: Math.min(baseScore + completenessBonus + qualityBonus, 100),
+        communication: 80 + Math.floor(Math.random() * 10),
+        technical: 70 + Math.floor(Math.random() * 15),
+        professionalism: 85 + Math.floor(Math.random() * 8)
+      };
+    }
+
+    function updateScores(scores) {
+      document.getElementById('overallScore').textContent = scores.overall;
+      document.getElementById('commScore').textContent = scores.communication;
+      document.getElementById('techScore').textContent = scores.technical;
+      document.getElementById('profScore').textContent = scores.professionalism;
+    }
+
+    function displayAnswers(answers) {
+      const container = document.getElementById('answersContainer');
+      
+      answers.forEach((answer, index) => {
+        const card = document.createElement('div');
+        card.className = 'answer-card';
+        card.innerHTML = `
+          <div class="answer-header">
+            <div class="answer-question">Q${index + 1}: ${answer.question}</div>
+            <div class="answer-badge">${answer.type || 'Question'}</div>
+          </div>
+          <div class="answer-body">${answer.answer}</div>
+          <div class="answer-feedback">
+            💡 <strong>Feedback:</strong> Good response with clear structure. Consider adding more specific examples to strengthen your answer.
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function retakeInterview() {
+      localStorage.removeItem('interviewAnswers');
+      localStorage.removeItem('interviewCompleted');
+      localStorage.removeItem('completedAt');
+      window.location.href = 'levels.html';
+    }
+
+    function downloadReport() {
+      alert('📥 Report download feature will be available soon. Your interview data is securely saved.');
+    }
+
+    function goToDashboard() {
+      window.location.href = 'dashboard.html';
+    }
+
+    // Check authentication and init
+    window.addEventListener('load', function() {
+      if (!localStorage.getItem('isAuthenticated')) {
+        window.location.href = 'login.html';
+        return;
+      }
+      initResults();
+    });
+  </script>
 </body>
 </html>

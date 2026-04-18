@@ -3,184 +3,523 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interview Levels - AI Mock Interview System</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+  <title>Interview Levels - AI Interview Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0A0F1C;
+      color: #FFFFFF;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Animated Blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.06;
+      pointer-events: none;
+      animation: blob-float 8s infinite ease-in-out;
+      z-index: 1;
+    }
+
+    .blob-1 {
+      width: 400px;
+      height: 400px;
+      background: #6366F1;
+      left: -200px;
+      top: 20%;
+    }
+
+    .blob-2 {
+      width: 300px;
+      height: 300px;
+      background: #10B981;
+      right: -150px;
+      bottom: 20%;
+      animation-delay: 2s;
+    }
+
+    @keyframes blob-float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -30px); }
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 100;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .navbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .progress-badge {
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #6366F1;
+      font-weight: 600;
+    }
+
+    .btn-back {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 200ms ease;
+    }
+
+    .btn-back:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #FFFFFF;
+    }
+
+    /* Main Content */
+    .container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .content {
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeInDown 400ms ease-out;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #FFFFFF 0%, rgba(255, 255, 255, 0.8) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.6;
+    }
+
+    /* Cards Grid */
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .level-card {
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 32px 24px;
+      cursor: pointer;
+      transition: all 300ms ease;
+      animation: fadeInUp 400ms ease-out;
+      animation-fill-mode: both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .level-card:nth-child(1) { animation-delay: 0ms; }
+    .level-card:nth-child(2) { animation-delay: 100ms; }
+    .level-card:nth-child(3) { animation-delay: 200ms; }
+    .level-card:nth-child(4) { animation-delay: 300ms; }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .level-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+      opacity: 0;
+      transition: opacity 300ms ease;
+    }
+
+    .level-card:hover::before {
+      opacity: 1;
+    }
+
+    .level-card:hover:not(.disabled) {
+      border-color: rgba(99, 102, 241, 0.3);
+      background: rgba(99, 102, 241, 0.05);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1);
+    }
+
+    .level-card.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .level-card.selected {
+      border-color: #6366F1;
+      background: rgba(99, 102, 241, 0.1);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    /* Card Icon */
+    .level-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(99, 102, 241, 0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .level-card:hover:not(.disabled) .level-icon {
+      background: rgba(99, 102, 241, 0.25);
+    }
+
+    /* Card Content */
+    .level-card h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #FFFFFF;
+    }
+
+    .level-card p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .level-features {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+
+    .level-features li {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .level-features li::before {
+      content: '✓';
+      color: #10B981;
+      font-weight: 700;
+    }
+
+    /* Card Meta */
+    .level-meta {
+      display: flex;
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Coming Soon Badge */
+    .coming-soon-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #FCA5A5;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* Start Section */
+    .start-section {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, #6366F1 0%, #7C3AED 100%);
+      color: white;
+      border: none;
+      padding: 16px 48px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 200ms ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .btn-start:hover:not(:disabled) {
+      transform: scale(1.02);
+      filter: brightness(1.1);
+    }
+
+    .btn-start:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-start:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .help-text {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.4);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 10;
+    }
+
+    .footer a {
+      color: #6366F1;
+      text-decoration: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 28px;
+      }
+
+      .levels-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .navbar {
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+    }
+  </style>
 </head>
-<body class="dark">
-  <header class="topbar">
-    <div class="brand">
-      <i class="fas fa-brain"></i>
-      AI Mock Interview System
-    </div>
-    <div class="user-info">
-      <i class="fas fa-user-circle"></i>
-      <span id="userEmail">User</span>
-    </div>
-  </header>
+<body>
+  <!-- Animated Blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
 
-  <main class="levels-container">
-    <div class="levels-header">
-      <h1>Select Interview Type</h1>
-      <p class="levels-subtitle">Choose the type of interview you want to practice</p>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span>🧠</span> AI Interview Pro
     </div>
+    <div class="navbar-actions">
+      <div class="progress-badge">Step 1 of 4</div>
+      <button class="btn-back" onclick="goBack()">← Back to Dashboard</button>
+    </div>
+  </nav>
 
-    <div class="levels-grid">
-      <!-- HR Interview -->
-      <div class="level-card" data-level="hr">
-        <div class="level-icon">
-          <i class="fas fa-users"></i>
+  <!-- Main Content -->
+  <div class="container">
+    <div class="content">
+      <!-- Header -->
+      <div class="header">
+        <h1>Choose Your Interview Type</h1>
+        <p>Select the type of interview you want to practice. Each session is customized to your choice.</p>
+      </div>
+
+      <!-- Level Cards Grid -->
+      <div class="levels-grid">
+        <!-- HR Interview -->
+        <div class="level-card" data-level="hr" onclick="selectInterview('hr')">
+          <div class="level-icon">👥</div>
+          <h2>HR Interview</h2>
+          <p>Practice behavioral questions and soft skills</p>
+          <ul class="level-features">
+            <li>Behavioral questions</li>
+            <li>Soft skills assessment</li>
+            <li>Communication tips</li>
+          </ul>
+          <div class="level-meta">
+            <span>⏱️ 30 minutes</span>
+            <span>📝 8-10 questions</span>
+          </div>
         </div>
-        <h2>HR Interview</h2>
-        <p>Practice behavioral questions, cultural fit, and soft skills assessment</p>
-        <ul class="level-features">
-          <li><i class="fas fa-check"></i> Behavioral questions</li>
-          <li><i class="fas fa-check"></i> Situational scenarios</li>
-          <li><i class="fas fa-check"></i> Communication skills</li>
-        </ul>
-        <div class="level-meta">
-          <span><i class="fas fa-clock"></i> 30 min</span>
-          <span><i class="fas fa-question-circle"></i> 8-10 questions</span>
+
+        <!-- Technical Interview -->
+        <div class="level-card" data-level="technical" onclick="selectInterview('technical')">
+          <div class="level-icon">💻</div>
+          <h2>Technical Interview</h2>
+          <p>Test technical knowledge and problem-solving</p>
+          <ul class="level-features">
+            <li>Technical concepts</li>
+            <li>System design</li>
+            <li>Architecture patterns</li>
+          </ul>
+          <div class="level-meta">
+            <span>⏱️ 30 minutes</span>
+            <span>📝 6-8 questions</span>
+          </div>
+        </div>
+
+        <!-- Behavioral Interview -->
+        <div class="level-card" data-level="behavioral" onclick="selectInterview('behavioral')">
+          <div class="level-icon">🎯</div>
+          <h2>Behavioral Interview</h2>
+          <p>Demonstrate leadership and teamwork</p>
+          <ul class="level-features">
+            <li>STAR method</li>
+            <li>Past experiences</li>
+            <li>Leadership scenarios</li>
+          </ul>
+          <div class="level-meta">
+            <span>⏱️ 30 minutes</span>
+            <span>📝 7-9 questions</span>
+          </div>
+        </div>
+
+        <!-- Coding Interview (Coming Soon) -->
+        <div class="level-card disabled">
+          <div class="coming-soon-badge">Coming Soon</div>
+          <div class="level-icon">🔧</div>
+          <h2>Coding Interview</h2>
+          <p>Live coding challenges and algorithms</p>
+          <ul class="level-features">
+            <li>Data structures</li>
+            <li>Algorithms</li>
+            <li>Live coding</li>
+          </ul>
+          <div class="level-meta">
+            <span>⏱️ 45 minutes</span>
+            <span>📝 3-5 problems</span>
+          </div>
         </div>
       </div>
 
-      <!-- Technical Interview -->
-      <div class="level-card" data-level="technical">
-        <div class="level-icon">
-          <i class="fas fa-laptop-code"></i>
-        </div>
-        <h2>Technical Interview</h2>
-        <p>Test your technical knowledge, problem-solving, and system design skills</p>
-        <ul class="level-features">
-          <li><i class="fas fa-check"></i> Technical concepts</li>
-          <li><i class="fas fa-check"></i> System design</li>
-          <li><i class="fas fa-check"></i> Architecture patterns</li>
-        </ul>
-        <div class="level-meta">
-          <span><i class="fas fa-clock"></i> 30 min</span>
-          <span><i class="fas fa-question-circle"></i> 6-8 questions</span>
-        </div>
-      </div>
-
-      <!-- Behavioral Interview -->
-      <div class="level-card" data-level="behavioral">
-        <div class="level-icon">
-          <i class="fas fa-comments"></i>
-        </div>
-        <h2>Behavioral Interview</h2>
-        <p>Demonstrate leadership, teamwork, and past experience handling challenges</p>
-        <ul class="level-features">
-          <li><i class="fas fa-check"></i> STAR method</li>
-          <li><i class="fas fa-check"></i> Past experiences</li>
-          <li><i class="fas fa-check"></i> Leadership scenarios</li>
-        </ul>
-        <div class="level-meta">
-          <span><i class="fas fa-clock"></i> 30 min</span>
-          <span><i class="fas fa-question-circle"></i> 7-9 questions</span>
-        </div>
-      </div>
-
-      <!-- Coding Interview (Future Scope) -->
-      <div class="level-card disabled" data-level="coding">
-        <div class="level-icon">
-          <i class="fas fa-code"></i>
-        </div>
-        <h2>Coding Interview</h2>
-        <p>Live coding challenges and algorithm problem solving</p>
-        <ul class="level-features">
-          <li><i class="fas fa-times"></i> Coming soon</li>
-          <li><i class="fas fa-times"></i> Data structures</li>
-          <li><i class="fas fa-times"></i> Algorithms</li>
-        </ul>
-        <div class="level-meta">
-          <span><i class="fas fa-clock"></i> 45 min</span>
-          <span><i class="fas fa-question-circle"></i> 3-5 problems</span>
-        </div>
-        <div class="coming-soon-badge">Coming Soon</div>
+      <!-- Start Button -->
+      <div class="start-section">
+        <button id="startBtn" class="btn-start" disabled>
+          🚀 Start Interview
+        </button>
+        <p class="help-text">Select an interview type above to continue</p>
       </div>
     </div>
+  </div>
 
-    <div class="start-section">
-      <button id="startInterviewBtn" class="btn-start" disabled>
-        <span>Start Interview</span>
-        <i class="fas fa-play-circle"></i>
-      </button>
-      <p class="help-text">Select an interview type above to continue</p>
-    </div>
-  </main>
-
+  <!-- Footer -->
   <footer class="footer">
-    <p>AI Mock Interview System - Frontend Demo | Engineering Project</p>
+    <p>&copy; 2026 AI Interview Pro | <a href="dashboard.html">Back to Dashboard</a></p>
   </footer>
 
   <script>
-    // Display user email from localStorage
-    const userEmail = localStorage.getItem('userEmail') || 'Guest';
-    document.getElementById('userEmail').textContent = userEmail;
-
-    // Level selection
-    let selectedLevel = null;
-    const levelCards = document.querySelectorAll('.level-card:not(.disabled)');
-    const startBtn = document.getElementById('startInterviewBtn');
-    const helpText = document.querySelector('.help-text');
-
-    console.log('Level cards found:', levelCards.length);
-
-    levelCards.forEach((card, index) => {
-      console.log(`Setting up click handler for card ${index}:`, card.dataset.level);
-      
-      card.addEventListener('click', function(e) {
-        console.log('Card clicked:', this.dataset.level);
-        
-        // Remove previous selection
-        levelCards.forEach(c => c.classList.remove('selected'));
-        
-        // Select current card
-        this.classList.add('selected');
-        selectedLevel = this.dataset.level;
-        
-        console.log('Selected level:', selectedLevel);
-        
-        // Enable start button
-        startBtn.disabled = false;
-        helpText.textContent = `Ready to start ${this.querySelector('h2').textContent}`;
-        
-        // Add selection animation
-        this.style.transform = 'scale(1.02)';
-        setTimeout(() => {
-          this.style.transform = '';
-        }, 200);
+    function selectInterview(type) {
+      // Remove previous selection
+      document.querySelectorAll('.level-card:not(.disabled)').forEach(card => {
+        card.classList.remove('selected');
       });
-    });
 
-    // Start interview button
-    startBtn.addEventListener('click', function() {
-      if (!selectedLevel) return;
-      
-      // Store selected level
-      localStorage.setItem('interviewLevel', selectedLevel);
-      localStorage.setItem('interviewStartTime', new Date().toISOString());
-      
-      // Button animation
-      this.style.transform = 'scale(0.95)';
-      setTimeout(() => {
-        this.style.transform = 'scale(1)';
-        // Redirect to interview page
+      // Select the clicked card
+      event.currentTarget.classList.add('selected');
+
+      // Enable start button
+      document.getElementById('startBtn').disabled = false;
+      document.querySelector('.help-text').textContent = `Ready to start ${event.currentTarget.querySelector('h2').textContent}`;
+
+      // Store selected type
+      sessionStorage.setItem('interviewType', type);
+    }
+
+    function goBack() {
+      window.location.href = 'dashboard.html';
+    }
+
+    document.getElementById('startBtn').addEventListener('click', function() {
+      const type = sessionStorage.getItem('interviewType');
+      if (type) {
+        localStorage.setItem('interviewLevel', type);
+        localStorage.setItem('interviewStartTime', new Date().toISOString());
         window.location.href = 'interview.html';
-      }, 200);
+      }
     });
 
-    // Add hover glow effect
-    levelCards.forEach(card => {
-      card.addEventListener('mouseenter', function() {
-        this.style.boxShadow = '0 8px 40px rgba(124, 92, 255, 0.3)';
-      });
-      
-      card.addEventListener('mouseleave', function() {
-        if (!this.classList.contains('selected')) {
-          this.style.boxShadow = '';
-        }
-      });
+    // Check authentication
+    window.addEventListener('load', function() {
+      if (!localStorage.getItem('isAuthenticated')) {
+        window.location.href = 'login.html';
+      }
     });
   </script>
 </body>

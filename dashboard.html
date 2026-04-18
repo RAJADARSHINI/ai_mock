@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - AI Interview Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0A0F1C;
+      color: #FFFFFF;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Animated gradient blob background */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.06;
+      pointer-events: none;
+      animation: blob-float 8s infinite ease-in-out;
+      z-index: 1;
+    }
+
+    .blob-1 {
+      width: 400px;
+      height: 400px;
+      background: #6366F1;
+      left: -200px;
+      top: 20%;
+    }
+
+    .blob-2 {
+      width: 300px;
+      height: 300px;
+      background: #10B981;
+      right: -150px;
+      bottom: 20%;
+      animation-delay: 2s;
+    }
+
+    @keyframes blob-float {
+      0%, 100% {
+        transform: translate(0, 0);
+      }
+      50% {
+        transform: translate(30px, -30px);
+      }
+    }
+
+    /* Header/Navbar */
+    .navbar {
+      background: rgba(17, 24, 39, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 100;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    .navbar-brand svg {
+      width: 24px;
+      height: 24px;
+      color: #6366F1;
+    }
+
+    .navbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      background: rgba(99, 102, 241, 0.1);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366F1 0%, #7C3AED 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn-logout {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.6);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 200ms ease;
+    }
+
+    .btn-logout:hover {
+      border-color: #EF4444;
+      color: #EF4444;
+    }
+
+    /* Main Content */
+    .dashboard-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .dashboard-content {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .welcome-section {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeInUp 400ms ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .welcome-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: rgba(99, 102, 241, 0.15);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .welcome-icon svg {
+      width: 48px;
+      height: 48px;
+      color: #6366F1;
+    }
+
+    .welcome-section h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .welcome-section p {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: #6366F1;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .stat-card {
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: all 200ms ease;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #6366F1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Action Section */
+    .action-section {
+      text-align: center;
+    }
+
+    .action-section h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary, .btn-secondary {
+      padding: 16px 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 200ms ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366F1 0%, #7C3AED 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.02);
+      filter: brightness(1.1);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Footer */
+    .dashboard-footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.4);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .navbar {
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .welcome-section h1 {
+        font-size: 24px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .btn-primary, .btn-secondary {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" fill="currentColor"/>
+      </svg>
+      AI Interview Pro
+    </div>
+    <div class="navbar-actions">
+      <div class="user-profile">
+        <div class="user-avatar" id="userInitial">U</div>
+        <span id="userEmailDisplay">user@example.com</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="dashboard-container">
+    <div class="dashboard-content">
+      <!-- Welcome Section -->
+      <div class="welcome-section">
+        <div class="welcome-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z" fill="currentColor"/>
+          </svg>
+        </div>
+        <h1>Welcome, <span class="user-name" id="userDisplayName">User</span>!</h1>
+        <p>Ready to ace your next interview? Let's get started with personalized practice sessions.</p>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📝</div>
+          <div class="stat-value" id="interviewsCompleted">0</div>
+          <div class="stat-label">Interviews Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-value" id="averageScore">—</div>
+          <div class="stat-label">Average Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-value" id="skilLStreak">0</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+      </div>
+
+      <!-- Action Section -->
+      <div class="action-section">
+        <h2>What would you like to do?</h2>
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="startInterview()">
+            <span>🚀</span>
+            <span>Start New Interview</span>
+          </button>
+          <button class="btn-secondary" onclick="viewHistory()">
+            <span>📊</span>
+            <span>View History</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="dashboard-footer">
+    <p>&copy; 2026 AI Interview Pro. All rights reserved. | <a href="login.html" style="color: #6366F1; text-decoration: none;">Back to Login</a></p>
+  </footer>
+
+  <script>
+    // Load user info from localStorage
+    function loadUserInfo() {
+      const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+      const userName = userEmail.split('@')[0].charAt(0).toUpperCase() + userEmail.split('@')[0].slice(1);
+      
+      document.getElementById('userEmailDisplay').textContent = userEmail;
+      document.getElementById('userDisplayName').textContent = userName;
+      document.getElementById('userInitial').textContent = userEmail.charAt(0).toUpperCase();
+    }
+
+    // Navigation functions
+    function startInterview() {
+      // Redirect to levels selection page
+      window.location.href = 'levels.html';
+    }
+
+    function viewHistory() {
+      alert('Interview history coming soon! View your past performance and progress.');
+    }
+
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('rememberMe');
+        localStorage.removeItem('loginTime');
+        localStorage.removeItem('isAuthenticated');
+        window.location.href = 'login.html';
+      }
+    }
+
+    // Initialize page
+    window.addEventListener('load', function() {
+      // Check if user is authenticated
+      if (!localStorage.getItem('isAuthenticated')) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      loadUserInfo();
+    });
+  </script>
+</body>
+</html>

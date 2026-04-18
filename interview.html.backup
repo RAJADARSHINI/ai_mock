@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Interview Test - Live Camera & Speech Recognition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0A0F1C;
+      color: #FFFFFF;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Animated Blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.06;
+      pointer-events: none;
+      animation: blob-float 8s infinite ease-in-out;
+      z-index: 1;
+    }
+
+    .blob-1 {
+      width: 500px;
+      height: 500px;
+      background: #6366F1;
+      left: -250px;
+      top: 10%;
+    }
+
+    .blob-2 {
+      width: 400px;
+      height: 400px;
+      background: #10B981;
+      right: -200px;
+      bottom: 10%;
+      animation-delay: 2s;
+    }
+
+    @keyframes blob-float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -30px); }
+    }
+
+    /* Top Bar */
+    .topbar {
+      background: rgba(17, 24, 39, 0.99);
+      backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.25);
+      padding: 18px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.12);
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366F1 0%, #10B981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-badge {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6366F1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .timer-badge {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.05) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #FCA5A5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .recording-indicator {
+      width: 8px;
+      height: 8px;
+      background: #EF4444;
+      border-radius: 50%;
+      animation: pulse-red 1s infinite;
+    }
+
+    @keyframes pulse-red {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Main Layout */
+    .interview-layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      position: relative;
+      z-index: 10;
+      overflow: hidden;
+      padding: 32px;
+    }
+
+    /* Left Panel - Camera (LARGE) */
+    .camera-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .video-container {
+      width: 100%;
+      height: 100%;
+      min-height: 600px;
+      background: #0F1419;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 3px solid rgba(99, 102, 241, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+    }
+
+    #videoPreview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      -webkit-transform: scaleX(-1);
+      transform: scaleX(-1);
+    }
+
+    .video-placeholder {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.4);
+      text-align: center;
+    }
+
+    .media-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .media-btn {
+      padding: 14px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 2px solid rgba(99, 102, 241, 0.25);
+      border-radius: 10px;
+      color: #A5B4FC;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all 200ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .media-btn:hover {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: #A5B4FC;
+    }
+
+    .media-btn.enabled {
+      background: #6366F1;
+      color: white;
+      border-color: #6366F1;
+    }
+
+    /* Right Panel - Answer */
+    .answer-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+    }
+
+    .question-header {
+      animation: slideInUp 400ms ease-out;
+    }
+
+    .question-badge {
+      display: inline-block;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #6366F1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .question-text {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.5;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    /* Speech Status */
+    .speech-status {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      padding: 16px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .listening-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #10B981;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #10B981;
+      border-radius: 50%;
+      animation: pulse-green 1.5s infinite;
+    }
+
+    @keyframes pulse-green {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .listening-indicator.inactive .pulse-dot {
+      animation: none;
+      opacity: 0.3;
+    }
+
+    .listening-indicator.inactive {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Answer Display */
+    .answer-display-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .answer-label {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      letter-spacing: 0.2px;
+    }
+
+    .char-count {
+      font-size: 12px;
+      color: #6366F1;
+      font-weight: 600;
+    }
+
+    .answer-text {
+      flex: 1;
+      padding: 16px;
+      background: #1F2937;
+      border: 2px solid rgba(99, 102, 241, 0.2);
+      border-radius: 12px;
+      color: #FFFFFF;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: none;
+      transition: all 200ms ease;
+      margin-bottom: 12px;
+    }
+
+    .answer-text:focus {
+      outline: none;
+      border-color: #6366F1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+      background: rgba(31, 41, 55, 0.9);
+    }
+
+    .answer-text.speaking {
+      border-color: #10B981;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+    }
+
+    /* Control Buttons */
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .control-btn {
+      flex: 1;
+      padding: 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 2px solid rgba(99, 102, 241, 0.25);
+      border-radius: 10px;
+      color: #A5B4FC;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      transition: all 200ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .control-btn:hover {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: #A5B4FC;
+    }
+
+    .control-btn.recording {
+      background: #EF4444;
+      border-color: #EF4444;
+      color: white;
+    }
+
+    .control-btn.recording:hover {
+      background: #DC2626;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 200ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366F1 0%, #7C3AED 100%);
+      color: white;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 600;
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.3);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .question-text {
+        font-size: 28px;
+      }
+
+      .interview-layout {
+        grid-template-columns: 1fr 400px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .interview-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .media-sidebar {
+        max-height: 400px;
+        border-left: none;
+        border-top: 1px solid rgba(99, 102, 241, 0.2);
+      }
+
+      .question-panel {
+        padding: 20px;
+      }
+
+      .question-text {
+        font-size: 24px;
+      }
+
+      .answer-text {
+        min-height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="brand-section">
+      <span style="font-size: 24px;">🧠</span>
+      <div class="brand-title">AI Interview Test</div>
+    </div>
+    <div class="status-bar">
+      <div class="status-badge" id="progressBadge">
+        ◉ Question 1 of 10
+      </div>
+      <div class="timer-badge" id="timerBadge">
+        <span class="recording-indicator"></span>
+        ⏱️ 30:00
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="interview-layout">
+    <!-- Left Panel - Large Camera -->
+    <div class="camera-panel">
+      <div class="video-container">
+        <video id="videoPreview" autoplay playsinline></video>
+        <div class="video-placeholder" id="videoPlaceholder">
+          📷<br>Camera Off
+        </div>
+      </div>
+      <div class="media-buttons">
+        <button class="media-btn enabled" id="cameraBtn" onclick="toggleCamera()">📷 Camera</button>
+        <button class="media-btn" id="micBtn" onclick="toggleMicrophone()">🎤 Mic</button>
+      </div>
+    </div>
+
+    <!-- Right Panel - Question & Answer -->
+    <div class="answer-panel">
+      <!-- Question -->
+      <div class="question-header">
+        <div class="question-badge" id="questionType">Behavioral Question</div>
+        <div class="question-text" id="questionText">Loading your interview question...</div>
+      </div>
+
+      <!-- Speech Status -->
+      <div class="speech-status" id="speechStatus">
+        <div class="listening-indicator inactive" id="listeningIndicator">
+          <div class="pulse-dot"></div>
+          <span id="statusText">Ready to record</span>
+        </div>
+      </div>
+
+      <!-- Answer Display -->
+      <div class="answer-display-section">
+        <div class="answer-label">
+          <span>✏️ Your Answer</span>
+          <span class="char-count" id="charCount">Words: 0</span>
+        </div>
+
+        <textarea id="answerText" class="answer-text" placeholder="Click 'Start Speaking' and say your answer..."></textarea>
+      </div>
+
+      <!-- Control Buttons -->
+      <div class="controls">
+        <button class="control-btn" id="startSpeakingBtn" onclick="startSpeechRecognition()">
+          🎤 Start Speaking
+        </button>
+        <button class="control-btn recording" id="stopSpeakingBtn" onclick="stopSpeechRecognition()" style="display: none;">
+          ◼ Stop
+        </button>
+        <button class="control-btn" onclick="clearAnswer()">
+          🗑️ Clear
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-secondary" onclick="previousQuestion()">← Back</button>
+        <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn">
+          Next →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== VARIABLES ====================
+    let currentQuestionIndex = 0;
+    let mediaStream = null;
+    let recognition = null;
+    let isListening = false;
+    let timeRemaining = 1800;
+    let answers = [];
+    let cameraEnabled = false;
+
+    const questions = [
+      { type: 'Behavioral', text: 'Tell me about a time when you had to work with a difficult team member. How did you handle it?' },
+      { type: 'Behavioral', text: 'Describe a project where you took initiative and led the team to success.' },
+      { type: 'Technical', text: 'Explain your approach to solving complex technical problems.' },
+      { type: 'Behavioral', text: 'Can you tell me about a failure you experienced and what you learned from it?' },
+      { type: 'Technical', text: 'How do you stay updated with the latest technologies and industry trends?' },
+      { type: 'Behavioral', text: 'Describe a situation where you had to meet a tight deadline under pressure.' },
+      { type: 'Behavioral', text: 'What are your short-term and long-term career goals?' },
+      { type: 'Technical', text: 'How would you approach debugging a complex system issue?' },
+      { type: 'Behavioral', text: 'Tell me why you are interested in this position and our company.' },
+      { type: 'Technical', text: 'Describe your ideal team environment and how you contribute to it.' }
+    ];
+
+    // ==================== SPEECH RECOGNITION ====================
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('Speech Recognition not supported in your browser. Use Chrome, Edge, or Safari.');
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = function() {
+        isListening = true;
+        document.getElementById('startSpeakingBtn').style.display = 'none';
+        document.getElementById('stopSpeakingBtn').style.display = 'flex';
+        document.getElementById('listeningIndicator').classList.remove('inactive');
+        document.getElementById('statusText').textContent = '🎙️ Listening...';
+        document.getElementById('waveform').style.display = 'flex';
+        document.getElementById('answerText').classList.add('speaking');
+      };
+
+      recognition.onend = function() {
+        isListening = false;
+        document.getElementById('startSpeakingBtn').style.display = 'flex';
+        document.getElementById('stopSpeakingBtn').style.display = 'none';
+        document.getElementById('listeningIndicator').classList.add('inactive');
+        document.getElementById('statusText').textContent = '✓ Recording complete';
+        document.getElementById('waveform').style.display = 'none';
+        document.getElementById('answerText').classList.remove('speaking');
+      };
+
+      recognition.onresult = function(event) {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' ';
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+
+        const textarea = document.getElementById('answerText');
+        textarea.value = textarea.value + finalTranscript + interimTranscript;
+        updateCharCount();
+      };
+
+      recognition.onerror = function(event) {
+        console.error('Speech error:', event.error);
+        document.getElementById('statusText').textContent = 'Error: ' + event.error;
+      };
+    }
+
+    function startSpeechRecognition() {
+      if (!recognition) {
+        initSpeechRecognition();
+      }
+      recognition.start();
+    }
+
+    function stopSpeechRecognition() {
+      if (recognition) {
+        recognition.stop();
+      }
+    }
+
+    function clearAnswer() {
+      document.getElementById('answerText').value = '';
+      updateCharCount();
+    }
+
+    function updateCharCount() {
+      const count = document.getElementById('answerText').value.length;
+      document.getElementById('charCount').textContent = count + ' characters';
+    }
+
+    // ==================== TIMER ====================
+    function updateTimer() {
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      document.getElementById('timerBadge').innerHTML = `
+        <span class="recording-indicator"></span>
+        ⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}
+      `;
+      
+      if (timeRemaining > 0) {
+        timeRemaining--;
+        setTimeout(updateTimer, 1000);
+      }
+    }
+
+    // ==================== CAMERA ====================
+    async function toggleCamera() {
+      if (cameraEnabled) {
+        if (mediaStream) {
+          mediaStream.getVideoTracks().forEach(track => track.stop());
+        }
+        document.getElementById('videoPreview').style.display = 'none';
+        document.getElementById('videoPlaceholder').style.display = 'flex';
+        document.getElementById('cameraBtn').classList.remove('enabled');
+        cameraEnabled = false;
+      } else {
+        try {
+          let stream = mediaStream;
+          if (!stream) {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            mediaStream = stream;
+          }
+          document.getElementById('videoPreview').srcObject = stream;
+          document.getElementById('videoPreview').style.display = 'block';
+          document.getElementById('videoPlaceholder').style.display = 'none';
+          document.getElementById('cameraBtn').classList.add('enabled');
+          cameraEnabled = true;
+        } catch (err) {
+          alert('Camera access denied. Please enable in browser settings.');
+        }
+      }
+    }
+
+    function toggleMicrophone() {
+      const btn = document.getElementById('micBtn');
+      btn.classList.toggle('enabled');
+    }
+
+    // ==================== QUESTIONS ====================
+    function loadQuestion() {
+      const q = questions[currentQuestionIndex];
+      document.getElementById('questionText').textContent = q.text;
+      document.getElementById('questionType').textContent = '● ' + q.type + ' Question';
+      document.getElementById('progressBadge').textContent = `◉ Question ${currentQuestionIndex + 1} of ${questions.length}`;
+      document.getElementById('answerText').value = '';
+      updateCharCount();
+    }
+
+    function nextQuestion() {
+      const answer = document.getElementById('answerText').value;
+      
+      if (!answer.trim()) {
+        alert('⚠️ Please provide an answer before proceeding.');
+        return;
+      }
+
+      answers[currentQuestionIndex] = {
+        question: questions[currentQuestionIndex].text,
+        answer: answer,
+        type: questions[currentQuestionIndex].type,
+        timestamp: new Date().toISOString()
+      };
+
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+      } else {
+        submitInterview();
+      }
+    }
+
+    function previousQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function submitInterview() {
+      const answer = document.getElementById('answerText').value;
+      if (answer.trim()) {
+        answers[currentQuestionIndex] = {
+          question: questions[currentQuestionIndex].text,
+          answer: answer,
+          type: questions[currentQuestionIndex].type,
+          timestamp: new Date().toISOString()
+        };
+      }
+
+      localStorage.setItem('interviewAnswers', JSON.stringify(answers));
+      localStorage.setItem('interviewCompleted', 'true');
+      localStorage.setItem('completedAt', new Date().toISOString());
+
+      window.location.href = 'feedback.html';
+    }
+
+    // ==================== INIT ====================
+    window.addEventListener('load', function() {
+      if (!localStorage.getItem('isAuthenticated')) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      loadQuestion();
+      updateTimer();
+      initSpeechRecognition();
+      toggleCamera(); // Auto-enable camera
+    });
+
+    // ==================== CLEANUP ====================
+    window.addEventListener('beforeunload', function(e) {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+      }
+      if (recognition) {
+        recognition.stop();
+      }
+    });
+
+    document.getElementById('answerText').addEventListener('input', updateCharCount);
+  </script>
+</body>
+</html>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0A0F1C;
+      color: #FFFFFF;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Animated Blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.06;
+      pointer-events: none;
+      animation: blob-float 8s infinite ease-in-out;
+      z-index: 1;
+    }
+
+    .blob-1 {
+      width: 500px;
+      height: 500px;
+      background: #6366F1;
+      left: -250px;
+      top: 10%;
+    }
+
+    .blob-2 {
+      width: 400px;
+      height: 400px;
+      background: #10B981;
+      right: -200px;
+      bottom: 10%;
+      animation-delay: 2s;
+    }
+
+    @keyframes blob-float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -30px); }
+    }
+
+    /* Top Bar */
+    .topbar {
+      background: rgba(17, 24, 39, 0.99);
+      backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.25);
+      padding: 18px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.12);
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366F1 0%, #10B981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-badge {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6366F1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .timer-badge {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.05) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #FCA5A5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .recording-indicator {
+      width: 8px;
+      height: 8px;
+      background: #EF4444;
+      border-radius: 50%;
+      animation: pulse-red 1s infinite;
+    }
+
+    @keyframes pulse-red {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Main Layout */
+    .interview-layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 0;
+      position: relative;
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    /* Left Panel - Questions */
+    .question-panel {
+      display: flex;
+      flex-direction: column;
+      padding: 40px;
+      overflow-y: auto;
+      background: rgba(10, 15, 28, 0.5);
+    }
+
+    .question-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 20px;
+    }
+
+    .question-header {
+      margin-bottom: 40px;
+      animation: slideInUp 400ms ease-out;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .question-badge {
+      display: inline-block;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #6366F1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    .question-text {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1.5;
+      color: #FFFFFF;
+      margin-bottom: 32px;
+      letter-spacing: -0.5px;
+    }
+
+    .question-context {
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+      background: rgba(99, 102, 241, 0.05);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+
+    .context-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .context-text {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.6;
+    }
+
+    /* Answer Input */
+    .answer-input-section {
+      margin-bottom: 30px;
+    }
+
+    .input-label {
+      display: flex;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: rgba(255, 255, 255, 0.95);
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.2px;
+    }
+
+    .input-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 0;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tab-btn {
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all 200ms ease;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .tab-btn.active {
+      color: #6366F1;
+      border-bottom-color: #6366F1;
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    .tab-btn:hover {
+      color: #A5B4FC;
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 20px;
+      background: #1F2937;
+      border: 2px solid rgba(99, 102, 241, 0.2);
+      border-radius: 12px;
+      color: #FFFFFF;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      resize: vertical;
+      transition: all 200ms ease;
+    }
+
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #6366F1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+      background: rgba(31, 41, 55, 0.9);
+    }
+
+    .input-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .recording-note {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #FCA5A5;
+    }
+
+    .recording-dot {
+      width: 6px;
+      height: 6px;
+      background: #EF4444;
+      border-radius: 50%;
+      animation: pulse-red 1s infinite;
+    }
+
+    /* Recording Controls */
+    .recording-controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .record-btn {
+      flex: 1;
+      padding: 12px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      color: #FCA5A5;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 200ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .record-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #FCA5A5;
+    }
+
+    .record-btn.recording {
+      background: #EF4444;
+      color: white;
+      border-color: #EF4444;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 200ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366F1 0%, #7C3AED 100%);
+      color: white;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.15);
+      box-shadow: 0 16px 40px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 600;
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Right Sidebar */
+    .media-sidebar {
+      background: rgba(17, 24, 39, 0.98);
+      border-left: 1px solid rgba(99, 102, 241, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-section:last-child {
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #6366F1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    .video-container {
+      width: 100%;
+      aspect-ratio: 9/16;
+      background: #0F1419;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid rgba(99, 102, 241, 0.3);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    #videoPreview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .video-placeholder {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.4);
+      text-align: center;
+    }
+
+    .media-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .media-btn {
+      padding: 13px;
+      background: rgba(99, 102, 241, 0.08);
+      border: 2px solid rgba(99, 102, 241, 0.25);
+      border-radius: 10px;
+      color: #A5B4FC;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 200ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .media-btn:hover {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: #A5B4FC;
+    }
+
+    .media-btn.enabled {
+      background: #6366F1;
+      color: white;
+      border-color: #6366F1;
+    }
+
+    .media-btn.disabled {
+      background: rgba(239, 68, 68, 0.1);
+      color: #FCA5A5;
+      border-color: rgba(239, 68, 68, 0.3);
+      cursor: not-allowed;
+    }
+
+    .tips-box {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      padding: 16px;
+      border-radius: 10px;
+      margin-top: auto;
+    }
+
+    .tips-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #10B981;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tips-list {
+      list-style: none;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.8;
+    }
+
+    .tips-list li {
+      margin-bottom: 8px;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .tips-list li::before {
+      content: '✓';
+      color: #10B981;
+      font-weight: 700;
+      position: absolute;
+      left: 0;
+    }
+
+    /* Footer */
+    .footer {
+      background: rgba(17, 24, 39, 0.95);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 16px 32px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.3);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .question-text {
+        font-size: 24px;
+      }
+
+      .interview-layout {
+        grid-template-columns: 1fr 350px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .interview-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .media-sidebar {
+        max-height: 400px;
+        border-left: none;
+        border-top: 1px solid rgba(99, 102, 241, 0.2);
+      }
+
+      .question-panel {
+        padding: 20px;
+      }
+
+      .question-text {
+        font-size: 20px;
+      }
+
+      textarea {
+        min-height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="brand-section">
+      <span style="font-size: 24px;">🧠</span>
+      <div class="brand-title">AI Interview Test</div>
+    </div>
+    <div class="status-bar">
+      <div class="status-badge" id="progressBadge">
+        ◉ Question 1 of 10
+      </div>
+      <div class="timer-badge" id="timerBadge">
+        <span class="recording-indicator"></span>
+        ⏱️ 30:00
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="interview-layout">
+    <!-- Question Panel -->
+    <div class="question-panel">
+      <div class="question-container">
+        <div class="question-header">
+          <div class="question-badge" id="questionType">Behavioral Question</div>
+          <div class="question-text" id="questionText">Loading your interview question...</div>
+          <div class="question-context">
+            <div class="context-icon">💡</div>
+            <div class="context-text">Take your time to provide a thoughtful, detailed response. Speak clearly and maintain eye contact with the camera.</div>
+          </div>
+        </div>
+
+        <!-- Answer Section -->
+        <div class="answer-input-section">
+          <div class="input-label">
+            <span>📝 Your Response</span>
+            <span id="charBadge" style="font-size: 11px; color: #6366F1;">(0 characters)</span>
+          </div>
+
+          <div class="input-tabs">
+            <button class="tab-btn active" onclick="switchTab('text')">Type Text</button>
+            <button class="tab-btn" onclick="switchTab('voice')">🎤 Voice Note</button>
+          </div>
+
+          <div id="textTab">
+            <textarea id="answerText" placeholder="Type your detailed response here..."></textarea>
+            <div class="input-footer">
+              <span>💬 Text mode - Type your complete answer</span>
+              <span class="recording-note">
+                <span class="recording-dot"></span>
+                Monitored
+              </span>
+            </div>
+          </div>
+
+          <div id="voiceTab" style="display: none;">
+            <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 8px; padding: 20px; text-align: center;">
+              <div style="font-size: 40px; margin-bottom: 12px;">🎤</div>
+              <div style="font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 12px;">Voice Response Mode</div>
+              <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6); margin-bottom: 20px;">Click record below. Your voice will be captured and analyzed.</div>
+              <button class="record-btn" id="recordBtn" onclick="toggleRecording()">
+                 ● Start Recording
+              </button>
+            </div>
+          </div>
+
+          <div class="recording-controls">
+            <button class="record-btn" id="recordingBtn" onclick="toggleRecording()" style="display: none;">
+              <span class="recording-dot"></span>
+              Recording... (Click to Stop)
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="btn btn-secondary" onclick="previousQuestion()">← Back</button>
+          <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn">
+            Next Question →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Media Sidebar -->
+    <div class="media-sidebar">
+      <!-- Camera Feed -->
+      <div class="sidebar-section">
+        <div class="section-title">📹 Camera Feed</div>
+        <div class="video-container">
+          <video id="videoPreview" autoplay playsinline></video>
+          <div class="video-placeholder" id="videoPlaceholder">
+            📷<br>Camera Disabled
+          </div>
+        </div>
+        <div class="media-buttons">
+          <button class="media-btn enabled" id="cameraBtn" onclick="toggleCamera()">📷 Camera</button>
+          <button class="media-btn" id="micBtn" onclick="toggleMicrophone()">🎤 Mic</button>
+        </div>
+      </div>
+
+      <!-- Tips & Guidance -->
+      <div class="sidebar-section">
+        <div class="tips-box">
+          <div class="tips-title">
+            💡 Preparation Tips
+          </div>
+          <ul class="tips-list">
+            <li>Use STAR for behavioral questions</li>
+            <li>Take a 5-second pause to think</li>
+            <li>Speak clearly and confidently</li>
+            <li>Maintain good posture</li>
+            <li>Avoid filler words (um, uh)</li>
+            <li>Provide concrete examples</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>🔒 Your responses are being recorded and analyzed. | ⚙️ All answers are auto-saved</p>
+  </div>
+
+  <script>
+    // ==================== INITIALIZATION ====================
+    let currentQuestionIndex = 0;
+    let isRecording = false;
+    let cameraEnabled = false;
+    let micEnabled = false;
+    let mediaStream = null;
+    let timeRemaining = 1800; // 30 minutes
+    let answers = [];
+
+    const questions = [
+      { type: 'Behavioral', text: 'Tell me about a time when you had to work with a difficult team member. How did you handle it?' },
+      { type: 'Behavioral', text: 'Describe a project where you took initiative and led the team to success.' },
+      { type: 'Technical', text: 'Explain your approach to solving complex technical problems.' },
+      { type: 'Behavioral', text: 'Can you tell me about a failure you experienced and what you learned from it?' },
+      { type: 'Technical', text: 'How do you stay updated with the latest technologies and industry trends?' },
+      { type: 'Behavioral', text: 'Describe a situation where you had to meet a tight deadline under pressure.' },
+      { type: 'Behavioral', text: 'What are your short-term and long-term career goals?' },
+      { type: 'Technical', text: 'How would you approach debugging a complex system issue?' },
+      { type: 'Behavioral', text: 'Tell me why you are interested in this position and our company.' },
+      { type: 'Technical', text: 'Describe your ideal team environment and how you contribute to it.' }
+    ];
+
+    // ==================== TIMER ====================
+    function updateTimer() {
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      document.getElementById('timerBadge').innerHTML = `
+        <span class="recording-indicator"></span>
+        ⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}
+      `;
+      
+      if (timeRemaining > 0) {
+        timeRemaining--;
+        setTimeout(updateTimer, 1000);
+      } else {
+        submitInterview();
+      }
+    }
+
+    // ==================== UI UPDATES ====================
+    function loadQuestion() {
+      const q = questions[currentQuestionIndex];
+      document.getElementById('questionText').textContent = q.text;
+      document.getElementById('questionType').textContent = '● ' + q.type + ' Question';
+      document.getElementById('progressBadge').textContent = `◉ Question ${currentQuestionIndex + 1} of ${questions.length}`;
+      document.getElementById('answerText').value = '';
+      document.getElementById('charBadge').textContent = '(0 characters)';
+      
+      // Smooth animation
+      document.querySelector('.question-header').style.animation = 'slideInUp 400ms ease-out';
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('textTab').style.display = tab === 'text' ? 'block' : 'none';
+      document.getElementById('voiceTab').style.display = tab === 'voice' ? 'block' : 'none';
+    }
+
+    // ==================== CAMERA & MICROPHONE ====================
+    async function toggleCamera() {
+      if (cameraEnabled) {
+        // Disable camera
+        if (mediaStream) {
+          mediaStream.getVideoTracks().forEach(track => track.stop());
+        }
+        document.getElementById('videoPreview').style.display = 'none';
+        document.getElementById('videoPlaceholder').style.display = 'flex';
+        document.getElementById('cameraBtn').classList.remove('enabled');
+        document.getElementById('cameraBtn').textContent = '📷 Camera';
+        cameraEnabled = false;
+      } else {
+        // Enable camera
+        try {
+          let stream = mediaStream;
+          if (!stream) {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            mediaStream = stream;
+          }
+          document.getElementById('videoPreview').srcObject = stream;
+          document.getElementById('videoPreview').style.display = 'block';
+          document.getElementById('videoPlaceholder').style.display = 'none';
+          document.getElementById('cameraBtn').classList.add('enabled');
+          document.getElementById('cameraBtn').textContent = '📷 Recording';
+          cameraEnabled = true;
+        } catch (err) {
+          alert('❌ Camera access denied. Please enable camera permissions in your browser settings.');
+          console.error('Camera error:', err);
+        }
+      }
+    }
+
+    function toggleMicrophone() {
+      if (micEnabled) {
+        document.getElementById('micBtn').classList.remove('enabled');
+        document.getElementById('micBtn').textContent = '🎤 Mic';
+        micEnabled = false;
+      } else {
+        document.getElementById('micBtn').classList.add('enabled');
+        document.getElementById('micBtn').textContent = '🎤 On';
+        micEnabled = true;
+      }
+    }
+
+    async function toggleRecording() {
+      if (isRecording) {
+        isRecording = false;
+        document.getElementById('recordBtn').style.display = 'inline-flex';
+        document.getElementById('recordingBtn').style.display = 'none';
+        document.getElementById('recordBtn').textContent = '● Start Recording';
+      } else {
+        // Request microphone access
+        try {
+          if (!mediaStream) {
+            mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          }
+          isRecording = true;
+          document.getElementById('recordBtn').style.display = 'none';
+          document.getElementById('recordingBtn').style.display = 'inline-flex';
+        } catch (err) {
+          alert('❌ Microphone access denied. Please enable microphone permissions in your browser settings.');
+        }
+      }
+    }
+
+    // ==================== CHARACTER COUNTER ====================
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('answerText').addEventListener('input', function() {
+        const length = this.value.length;
+        document.getElementById('charBadge').textContent = `(${length} characters)`;
+      });
+    });
+
+    // ==================== NAVIGATION ====================
+    function nextQuestion() {
+      const textAnswer = document.getElementById('answerText').value;
+      
+      if (!textAnswer.trim()) {
+        alert('⚠️ Please provide an answer before proceeding to the next question.');
+        return;
+      }
+
+      answers[currentQuestionIndex] = {
+        question: questions[currentQuestionIndex].text,
+        answer: textAnswer,
+        type: questions[currentQuestionIndex].type,
+        recorded_at: new Date().toISOString()
+      };
+
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+      } else {
+        submitInterview();
+      }
+    }
+
+    function previousQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function submitInterview() {
+      // Save all answers to localStorage
+      const textAnswer = document.getElementById('answerText').value;
+      if (textAnswer.trim()) {
+        answers[currentQuestionIndex] = {
+          question: questions[currentQuestionIndex].text,
+          answer: textAnswer,
+          type: questions[currentQuestionIndex].type,
+          recorded_at: new Date().toISOString()
+        };
+      }
+
+      localStorage.setItem('interviewAnswers', JSON.stringify(answers));
+      localStorage.setItem('interviewCompleted', 'true');
+      localStorage.setItem('completedAt', new Date().toISOString());
+
+      // Redirect to feedback/results
+      window.location.href = 'feedback.html';
+    }
+
+    // ==================== INIT ====================
+    window.addEventListener('load', function() {
+      if (!localStorage.getItem('isAuthenticated')) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      loadQuestion();
+      updateTimer();
+
+      // Auto-enable camera on load
+      toggleCamera();
+    });
+
+    // ==================== CLEANUP ====================
+    window.addEventListener('beforeunload', function(e) {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+      }
+    });
+  </script>
+</body>
+</html>
+  <header class="topbar">
+    <div class="brand">
+      <i class="fas fa-brain"></i>
+      AI Mock Interview
+    </div>
+    <div class="timer-container">
+      <i class="fas fa-clock"></i>
+      <span id="timer">30:00</span>
+    </div>
+    <div id="status" class="status">Ready</div>
+  </header>
+
+  <main class="interview-grid">
+    <!-- Question Card -->
+    <section class="question-card">
+      <div class="card-header">
+        <h2>
+          <i class="fas fa-question-circle"></i>
+          Interview Question <span id="questionNumber">1</span>
+        </h2>
+      </div>
+      <div id="questionText" class="question-text">Loading question...</div>
+      <div class="q-controls" style="display: none;">
+        <button id="prevQuestionBtn" class="icon-bubble" title="Previous Question">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button id="nextQuestionBtn" class="icon-bubble" title="Next Question">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+      <div class="submit-section">
+        <button id="submitInterviewBtn" class="btn-submit-large">
+          <i class="fas fa-paper-plane"></i>
+          <span>Submit & Get Feedback</span>
+        </button>
+        <p class="submit-help">Answer all questions and click to see your detailed feedback report</p>
+      </div>
+    </section>
+
+    <!-- Camera Panel -->
+    <section class="camera-panel">
+      <div class="panel-header">
+        <h3>
+          <i class="fas fa-video"></i>
+          Interview Camera
+        </h3>
+        <div class="icon-row">
+          <button id="camToggleBtn" class="icon-bubble active" title="Toggle Camera">
+            <i class="fas fa-camera"></i>
+          </button>
+          <button id="micToggleBtn" class="icon-bubble" title="Microphone Status">
+            <i class="fas fa-microphone"></i>
+          </button>
+        </div>
+      </div>
+      <div class="video-wrap">
+        <video id="interviewCamera" autoplay playsinline muted></video>
+        <div id="cameraError" class="camera-error" style="display:none;">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Camera access denied or unavailable</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transcript Panel -->
+    <section class="transcript-panel">
+      <div class="panel-header">
+        <h3>
+          <i class="fas fa-pen"></i>
+          Your Answer
+        </h3>
+        <div class="icon-row">
+          <button id="clearAnswerBtn" class="icon-bubble" title="Clear Answer">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      <div class="word-count">
+        <span>Words: <strong id="wordCount">0</strong></span>
+      </div>
+      <textarea 
+        id="transcript" 
+        class="transcript" 
+        placeholder="Click the microphone to start recording or type your answer here..."
+      ></textarea>
+      <div id="listeningIndicator" class="listening-indicator" style="display:none;">
+        <div class="pulse"></div>
+        <span>Listening...</span>
+      </div>
+      <div style="margin-top: 12px; text-align: center;">
+        <button id="submitNextBtn" class="btn-action" style="padding: 10px 24px; font-size: 14px;">
+          <i class="fas fa-arrow-right"></i>
+          <span>Submit & Next</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Feedback Panel -->
+    <section class="feedback-panel" style="display: none;">
+      <div class="panel-header">
+        <h3>
+          <i class="fas fa-chart-line"></i>
+          AI Feedback (Preview)
+        </h3>
+      </div>
+      <div class="scores">
+        <div class="score">
+          <label>Relevance</label>
+          <div id="relevanceScore">—</div>
+        </div>
+        <div class="score">
+          <label>Clarity</label>
+          <div id="clarityScore">—</div>
+        </div>
+        <div class="score">
+          <label>Completeness</label>
+          <div id="completenessScore">—</div>
+        </div>
+      </div>
+      <div id="feedbackText" class="feedback-text">
+        <i class="fas fa-info-circle"></i>
+        Answer the question to receive AI feedback.
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Built for practice — Frontend demo only</p>
+  </footer>
+
+  <script src="interview-script.js"></script>
+</body>
+</html>
