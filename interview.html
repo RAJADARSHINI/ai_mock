@@ -3,284 +3,305 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interview Pro - AI Mock Interview System</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <title>AI Mock Interview - Professional Edition</title>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Styles -->
   <style>
+    /* ============================================
+       INTERVIEW UI - Production Level Styling
+       ============================================ */
+
+    :root {
+      --primary: #4F46E5;
+      --primary-hover: #4338CA;
+      --primary-light: #E0E7FF;
+      --success: #10B981;
+      --success-light: #D1FAE5;
+      --error: #EF4444;
+      --error-light: #FEE2E2;
+      --warning: #F59E0B;
+      
+      --bg-dark: #0F172A;
+      --bg-darker: #020617;
+      --bg-card: #1E293B;
+      --bg-hover: #334155;
+      
+      --text-primary: #F1F5F9;
+      --text-secondary: #CBD5E1;
+      --text-tertiary: #94A3B8;
+      
+      --border-color: #334155;
+      --border-light: #475569;
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    :root {
-      --primary: #6366F1;
-      --primary-dark: #4F46E5;
-      --primary-light: #818CF8;
-      --secondary: #8B5CF6;
-      --accent: #EC4899;
-      --success: #10B981;
-      --warning: #F59E0B;
-      --danger: #EF4444;
-      --dark-bg: #0F172A;
-      --dark-card: #1E293B;
-      --dark-border: rgba(148, 163, 184, 0.1);
-      --text-primary: #F1F5F9;
-      --text-secondary: #CBD5E1;
-      --text-muted: #94A3B8;
-    }
-
     html, body {
+      width: 100%;
       height: 100%;
-      font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, var(--dark-bg) 0%, #0D1B2A 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-dark);
       color: var(--text-primary);
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
-    body {
-      display: flex;
-      flex-direction: column;
-    }
+    /* ============================================
+       NAVBAR
+       ============================================ */
 
-    /* Background Decoration */
-    .background-decoration {
-      position: fixed;
+    .navbar {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-darker));
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(10px);
+      position: sticky;
       top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
+      z-index: 100;
     }
 
-    .gradient-blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.04;
-    }
-
-    .blob-1 {
-      width: 600px;
-      height: 600px;
-      background: var(--primary);
-      top: -100px;
-      left: -100px;
-      animation: float 15s ease-in-out infinite;
-    }
-
-    .blob-2 {
-      width: 500px;
-      height: 500px;
-      background: var(--secondary);
-      bottom: -80px;
-      right: -80px;
-      animation: float 18s ease-in-out infinite reverse;
-    }
-
-    .blob-3 {
-      width: 400px;
-      height: 400px;
-      background: var(--accent);
-      top: 50%;
-      right: 10%;
-      animation: float 20s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0); }
-      25% { transform: translate(-30px, -50px); }
-      50% { transform: translate(30px, 50px); }
-      75% { transform: translate(-50px, 30px); }
-    }
-
-    /* ============ HEADER ============ */
-    .header {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--dark-border);
-      padding: 16px 32px;
+    .navbar-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 72px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative;
-      z-index: 50;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
-    .header-brand {
+    .navbar-brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-weight: 700;
-      font-size: 20px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .header-center {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      flex: 1;
-      justify-content: center;
-    }
-
-    .header-stat {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    .header-stat-value {
-      color: var(--primary);
+      font-size: 18px;
       font-weight: 600;
-      font-size: 16px;
+      color: var(--primary);
     }
 
-    .timer {
+    .timer-badge {
       display: flex;
       align-items: center;
       gap: 8px;
+      background: rgba(79, 70, 229, 0.1);
+      border: 1px solid var(--primary);
       padding: 8px 16px;
-      background: rgba(99, 102, 241, 0.08);
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      border-radius: 8px;
-      font-family: 'Courier New', monospace;
-      font-weight: 700;
+      border-radius: 20px;
+      font-weight: 600;
       font-size: 16px;
       color: var(--primary);
-      transition: all 200ms ease;
+      animation: pulse-timer 1s ease-in-out infinite;
     }
 
-    .timer.warning {
-      background: rgba(245, 158, 11, 0.1);
-      border-color: rgba(245, 158, 11, 0.3);
-      color: #FBBF24;
-    }
-
-    .timer.critical {
-      background: rgba(239, 68, 68, 0.1);
-      border-color: rgba(239, 68, 68, 0.3);
-      color: #FCA5A5;
-      animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
+    @keyframes pulse-timer {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
+      50% { opacity: 0.8; }
     }
 
-    .header-actions {
+    .status-indicator {
       display: flex;
-      gap: 12px;
-    }
-
-    .btn-header {
-      padding: 10px 16px;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
       background: rgba(99, 102, 241, 0.1);
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      border-radius: 8px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 200ms ease;
-      font-weight: 600;
+      border-radius: 20px;
       font-size: 13px;
+      color: var(--text-secondary);
     }
 
-    .btn-header:hover {
-      background: rgba(99, 102, 241, 0.15);
-      border-color: rgba(99, 102, 241, 0.4);
-      color: var(--primary);
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #94A3B8;
+      border-radius: 50%;
+      animation: status-blink 2s ease-in-out infinite;
     }
 
-    .btn-end {
-      background: rgba(239, 68, 68, 0.1);
-      border-color: rgba(239, 68, 68, 0.3);
-      color: #FCA5A5;
+    .status-dot.active {
+      background: var(--success);
+      animation: none;
     }
 
-    .btn-end:hover {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: rgba(239, 68, 68, 0.5);
+    @keyframes status-blink {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
     }
 
-    /* ============ MAIN CONTAINER ============ */
-    .container {
-      display: flex;
-      flex: 1;
-      position: relative;
-      z-index: 10;
-      gap: 24px;
-      padding: 24px;
-      overflow: hidden;
+    /* ============================================
+       MAIN LAYOUT
+       ============================================ */
+
+    .main-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      min-height: calc(100vh - 72px);
     }
 
-    /* ============ LEFT PANEL - QUESTIONS ============ */
-    .left-panel {
-      flex: 1;
+    .column {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      overflow-y: auto;
-      padding-right: 12px;
+      gap: 24px;
     }
 
-    .left-panel::-webkit-scrollbar {
-      width: 6px;
+    .column-left {
+      max-height: calc(100vh - 104px);
+      position: sticky;
+      top: 72px;
     }
 
-    .left-panel::-webkit-scrollbar-thumb {
-      background: rgba(99, 102, 241, 0.2);
-      border-radius: 3px;
+    /* ============================================
+       CAMERA SECTION
+       ============================================ */
+
+    .camera-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
 
-    .left-panel::-webkit-scrollbar-thumb:hover {
-      background: rgba(99, 102, 241, 0.4);
+    .camera-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .progress-container {
+    .camera-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .recording-indicator {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+      padding: 6px 12px;
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--error);
     }
 
-    .progress-bar {
+    .record-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--error);
+      border-radius: 50%;
+      animation: record-pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes record-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .camera-container {
+      position: relative;
       flex: 1;
-      height: 6px;
-      background: rgba(99, 102, 241, 0.1);
-      border-radius: 3px;
+      background: #000;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
-      border: 1px solid var(--dark-border);
     }
 
-    .progress-fill {
+    #interviewCamera {
+      width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      width: 0%;
-      transition: width 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+      object-fit: cover;
+      display: block;
+      border-radius: 0;
     }
 
-    .question-card {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.5));
-      border: 1px solid var(--dark-border);
-      border-radius: 16px;
-      padding: 28px;
-      border-left: 4px solid var(--primary);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      animation: slideIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    #interviewCamera.active {
+      animation: fadeIn 0.3s ease-out;
     }
 
-    @keyframes slideIn {
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Camera Empty State */
+    #cameraEmpty {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      text-align: center;
+      gap: 20px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.95));
+    }
+
+    #cameraEmpty.hidden {
+      display: none;
+    }
+
+    .empty-icon {
+      font-size: 60px;
+      color: var(--text-tertiary);
+      opacity: 0.5;
+    }
+
+    #cameraEmpty h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    #cameraEmpty p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      max-width: 300px;
+      line-height: 1.6;
+    }
+
+    #cameraError {
+      padding: 12px 16px;
+      background: var(--error-light);
+      color: var(--error);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      max-width: 300px;
+      animation: slideDown 0.3s ease-out;
+      display: none;
+    }
+
+    @keyframes slideDown {
       from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(-10px);
       }
       to {
         opacity: 1;
@@ -288,127 +309,228 @@
       }
     }
 
-    .question-badge {
-      display: inline-block;
-      padding: 6px 12px;
-      background: rgba(99, 102, 241, 0.1);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      border-radius: 6px;
-      font-size: 11px;
+    #recordingBadge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border-radius: 20px;
+      font-size: 12px;
       font-weight: 700;
-      color: var(--primary);
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
+      animation: slideDown 0.3s ease-out;
+      display: none;
     }
 
-    .question-text {
-      font-size: 24px;
+    /* ============================================
+       CARD STYLES
+       ============================================ */
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      animation: slideUp 0.4s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-header h3 {
+      font-size: 16px;
       font-weight: 600;
-      line-height: 1.6;
-      color: var(--text-primary);
-      margin-bottom: 16px;
     }
 
-    .answer-section {
+    /* ============================================
+       QUESTION CARD
+       ============================================ */
+
+    .question-card {
+      flex-shrink: 0;
+    }
+
+    .question-number {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .question-content {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text-primary);
+      margin: 16px 0 20px;
+      padding: 16px;
+      background: rgba(79, 70, 229, 0.05);
+      border-left: 3px solid var(--primary);
+      border-radius: var(--radius-sm);
+    }
+
+    .question-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .question-counter {
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    /* ============================================
+       ANSWER CARD
+       ============================================ */
+
+    .answer-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .answer-input-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    #answerText {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: none;
+      transition: all 0.3s ease;
+    }
+
+    #answerText:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(79, 70, 229, 0.05);
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+    }
+
+    #answerText::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    #listeningIndicator {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      background: rgba(16, 185, 129, 0.1);
+      border-radius: var(--radius-md);
+      color: var(--success);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    #listeningIndicator.active {
+      display: flex;
+    }
+
+    .listening-pulse {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: listening-pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes listening-pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.6;
+      }
+    }
+
+    .word-count-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    #wordProgress {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), #5555ff);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    .answer-actions {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
-    .answer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .answer-title {
-      font-size: 14px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      color: var(--text-secondary);
-    }
-
-    .word-count {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .word-count span {
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    .answer-textarea {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid var(--dark-border);
-      border-radius: 12px;
-      padding: 16px;
-      color: var(--text-primary);
-      font-family: 'Lato', sans-serif;
-      font-size: 14px;
-      line-height: 1.8;
-      min-height: 200px;
-      resize: vertical;
-      transition: all 300ms ease;
-      backdrop-filter: blur(5px);
-    }
-
-    .answer-textarea::placeholder {
-      color: var(--text-muted);
-    }
-
-    .answer-textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      background: rgba(15, 23, 42, 0.9);
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
-    }
-
-    .button-group {
-      display: flex;
-      gap: 12px;
-      margin-top: 16px;
-    }
+    /* ============================================
+       BUTTONS
+       ============================================ */
 
     .btn {
-      flex: 1;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 200ms ease;
+      padding: 12px 16px;
       border: none;
-      letter-spacing: 0.3px;
-      display: flex;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(99, 102, 241, 0.35);
-    }
-
-    .btn-secondary {
-      background: rgba(99, 102, 241, 0.1);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: var(--primary);
-    }
-
-    .btn-secondary:hover:not(:disabled) {
-      background: rgba(99, 102, 241, 0.15);
-      border-color: rgba(99, 102, 241, 0.5);
+      text-transform: none;
     }
 
     .btn:disabled {
@@ -416,856 +538,96 @@
       cursor: not-allowed;
     }
 
-    /* ============ RIGHT PANEL - CAMERA ============ */
-    .right-panel {
-      width: 420px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #5555ff);
+      color: white;
+      border: none;
     }
 
-    .camera-section {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.5));
-      border: 1px solid var(--dark-border);
-      border-radius: 16px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--primary-hover), #4444dd);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
     }
 
-    .camera-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px;
-      border-bottom: 1px solid var(--dark-border);
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(0);
     }
 
-    .camera-title {
-      font-size: 14px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      color: var(--text-secondary);
-    }
-
-    .camera-controls {
-      display: flex;
-      gap: 8px;
-    }
-
-    .control-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      background: rgba(99, 102, 241, 0.12);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: var(--primary);
-      font-size: 18px;
-      cursor: pointer;
-      transition: all 200ms ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .control-btn:hover {
-      background: rgba(99, 102, 241, 0.2);
-      border-color: rgba(99, 102, 241, 0.5);
-    }
-
-    .control-btn.active {
-      background: var(--danger);
-      border-color: var(--danger);
+    .btn-success {
+      background: linear-gradient(135deg, var(--success), #059669);
       color: white;
     }
 
-    .video-container {
-      flex: 1;
-      background: #000000;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 300px;
+    .btn-success:hover:not(:disabled) {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
     }
 
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: scaleX(-1);
-    }
-
-    .video-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      color: rgba(255, 255, 255, 0.3);
-      text-align: center;
-      padding: 20px;
-      font-size: 48px;
-    }
-
-    .recording-indicator {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--danger);
-      backdrop-filter: blur(10px);
-    }
-
-    .recording-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--danger);
-      border-radius: 50%;
-      animation: pulse 1s infinite;
-    }
-
-    .tips-section {
-      padding: 16px;
-      border-top: 1px solid var(--dark-border);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .tips-title {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      color: var(--text-secondary);
-    }
-
-    .tip-item {
-      padding: 10px;
-      background: rgba(16, 185, 129, 0.08);
-      border-left: 2px solid var(--success);
-      border-radius: 4px;
-      font-size: 12px;
-      line-height: 1.5;
-      color: var(--text-secondary);
-    }
-
-    /* ============ FOOTER ============ */
-    .footer {
-      background: rgba(15, 23, 42, 0.95);
-      border-top: 1px solid var(--dark-border);
-      padding: 16px 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      z-index: 50;
-      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .footer-info {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .footer-actions {
-      display: flex;
-      gap: 12px;
-    }
-
-    /* ============ RESPONSIVE ============ */
-    @media (max-width: 1200px) {
-      .container {
-        flex-direction: column;
-      }
-
-      .right-panel {
-        width: 100%;
-      }
-
-      .camera-section {
-        max-height: 400px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .header {
-        flex-direction: column;
-        gap: 12px;
-        padding: 12px 16px;
-      }
-
-      .container {
-        padding: 12px;
-        gap: 12px;
-      }
-
-      .footer {
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .question-text {
-        font-size: 18px;
-      }
-
-      .answer-textarea {
-        min-height: 150px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="background-decoration">
-    <div class="gradient-blob blob-1"></div>
-    <div class="gradient-blob blob-2"></div>
-    <div class="gradient-blob blob-3"></div>
-  </div>
-
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-brand">
-      <span>🎯</span>
-      <span>Interview Pro</span>
-    </div>
-
-    <div class="header-center">
-      <div class="header-stat">
-        Question <span class="header-stat-value" id="currentQuestion">1</span>/<span id="totalQuestions">10</span>
-      </div>
-      <div class="timer" id="timerDisplay">
-        <span id="timerText">30:00</span>
-      </div>
-    </div>
-
-    <div class="header-actions">
-      <button class="btn-header" onclick="showHelp()">❓ Help</button>
-      <button class="btn-header btn-end" onclick="endInterview()">🚪 End</button>
-    </div>
-  </header>
-
-  <!-- MAIN CONTAINER -->
-  <div class="container">
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
-      <!-- Progress -->
-      <div class="progress-container">
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <span style="font-size: 12px; color: var(--text-muted);" id="progressText">0%</span>
-      </div>
-
-      <!-- Question -->
-      <div class="question-card">
-        <div class="question-badge" id="questionType">Behavioral</div>
-        <div class="question-text" id="questionText">Loading question...</div>
-      </div>
-
-      <!-- Answer -->
-      <div class="answer-section">
-        <div class="answer-header">
-          <div class="answer-title">✏️ Your Response</div>
-          <div class="word-count">Words: <span id="wordCount">0</span></div>
-        </div>
-        <textarea class="answer-textarea" id="answerText" placeholder="Share your thoughts and experience here..."></textarea>
-      </div>
-
-      <!-- Navigation -->
-      <div class="button-group">
-        <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>⬅️ Previous</button>
-        <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next ➡️</button>
-      </div>
-    </div>
-
-    <!-- RIGHT PANEL - CAMERA -->
-    <div class="right-panel">
-      <div class="camera-section">
-        <div class="camera-header">
-          <div class="camera-title">📹 Your Interview</div>
-          <div class="camera-controls">
-            <button class="control-btn" id="cameraBtn" onclick="toggleCamera()" title="Toggle Camera">📷</button>
-            <button class="control-btn" id="micBtn" onclick="toggleMicrophone()" title="Toggle Microphone">🎤</button>
-          </div>
-        </div>
-
-        <div class="video-container">
-          <video id="videoPreview" autoplay playsinline muted></video>
-          <div class="video-placeholder" id="videoPlaceholder">📷</div>
-          <div class="recording-indicator" id="recordingIndicator" style="display: none;">
-            <span class="recording-dot"></span>
-            <span>RECORDING</span>
-          </div>
-        </div>
-
-        <div class="tips-section">
-          <div class="tips-title">💡 Tips</div>
-          <div class="tip-item">👁️ Maintain eye contact with camera</div>
-          <div class="tip-item">🎤 Speak clearly at steady pace</div>
-          <div class="tip-item">⏱️ Think before answering</div>
-          <div class="tip-item">📝 Use specific examples</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer-info">⏳ Complete all questions to submit and receive feedback</div>
-    <div class="footer-actions">
-      <button class="btn btn-primary" id="submitBtn" onclick="submitInterview()" style="padding: 10px 24px;">
-        ✓ Submit & Get Feedback
-      </button>
-    </div>
-  </footer>
-
-  <script>
-    // ==================== STATE ====================
-    let currentQuestionIndex = 0;
-    let mediaStream = null;
-    let recognition = null;
-    let isListening = false;
-    let timeRemaining = 1800;
-    let answers = [];
-    let cameraEnabled = false;
-
-    const questions = [
-      { type: 'Behavioral', text: 'Tell me about a time when you had to work with a difficult team member. How did you handle it?' },
-      { type: 'Behavioral', text: 'Describe a project where you took initiative and led the team to success.' },
-      { type: 'Technical', text: 'Explain your approach to solving complex technical problems.' },
-      { type: 'Behavioral', text: 'Can you tell me about a failure you experienced and what you learned from it?' },
-      { type: 'Technical', text: 'How do you stay updated with the latest technologies and industry trends?' },
-      { type: 'Behavioral', text: 'Describe a situation where you had to meet a tight deadline under pressure.' },
-      { type: 'Professional', text: 'What are your short-term and long-term career goals?' },
-      { type: 'Technical', text: 'How would you approach debugging a complex system issue?' },
-      { type: 'Behavioral', text: 'Tell me why you are interested in this position and our company.' },
-      { type: 'Professional', text: 'Describe your ideal team environment and how you contribute to it.' }
-    ];
-
-    // ==================== INITIALIZATION ====================
-    window.addEventListener('load', function() {
-      if (!localStorage.getItem('isAuthenticated')) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      document.getElementById('totalQuestions').textContent = questions.length;
-      initSpeechRecognition();
-      loadQuestion();
-      startTimer();
-      setupEventListeners();
-      toggleCamera();
-    });
-
-    function setupEventListeners() {
-      const textarea = document.getElementById('answerText');
-      textarea.addEventListener('input', updateWordCount);
-      textarea.addEventListener('input', autoSave);
-    }
-
-    // ==================== QUESTION MANAGEMENT ====================
-    function loadQuestion() {
-      const q = questions[currentQuestionIndex];
-      
-      document.getElementById('questionText').textContent = q.text;
-      document.getElementById('questionType').textContent = q.type;
-      document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
-      
-      const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-      document.getElementById('progressFill').style.width = progress + '%';
-      document.getElementById('progressText').textContent = Math.round(progress) + '%';
-
-      const textarea = document.getElementById('answerText');
-      if (answers[currentQuestionIndex]) {
-        textarea.value = answers[currentQuestionIndex].answer;
-      } else {
-        textarea.value = '';
-      }
-      updateWordCount();
-
-      document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
-      document.getElementById('nextBtn').textContent = 
-        currentQuestionIndex === questions.length - 1 ? 'Submit ✓' : 'Next ➡️';
-    }
-
-    function nextQuestion() {
-      const answer = document.getElementById('answerText').value;
-      
-      if (!answer.trim()) {
-        alert('⚠️ Please provide an answer before proceeding.');
-        return;
-      }
-
-      saveAnswer();
-      currentQuestionIndex++;
-
-      if (currentQuestionIndex < questions.length) {
-        loadQuestion();
-      } else {
-        submitInterview();
-      }
-    }
-
-    function previousQuestion() {
-      if (currentQuestionIndex > 0) {
-        saveAnswer();
-        currentQuestionIndex--;
-        loadQuestion();
-      }
-    }
-
-    function saveAnswer() {
-      const answer = document.getElementById('answerText').value;
-      const q = questions[currentQuestionIndex];
-      
-      answers[currentQuestionIndex] = {
-        question: q.text,
-        answer: answer.trim(),
-        type: q.type,
-        timestamp: new Date().toISOString()
-      };
-    }
-
-    function autoSave() {
-      const answer = document.getElementById('answerText').value;
-      if (answer.trim()) {
-        saveAnswer();
-      }
-    }
-
-    // ==================== TIMER ====================
-    function startTimer() {
-      setInterval(() => {
-        if (timeRemaining > 0) {
-          timeRemaining--;
-          updateTimerDisplay();
-        } else {
-          submitInterview();
-        }
-      }, 1000);
-    }
-
-    function updateTimerDisplay() {
-      const minutes = Math.floor(timeRemaining / 60);
-      const seconds = timeRemaining % 60;
-      const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-      
-      document.getElementById('timerText').textContent = timeStr;
-
-      const timerDisplay = document.getElementById('timerDisplay');
-      timerDisplay.classList.remove('warning', 'critical');
-
-      if (timeRemaining < 60) {
-        timerDisplay.classList.add('critical');
-      } else if (timeRemaining < 300) {
-        timerDisplay.classList.add('warning');
-      }
-    }
-
-    // ==================== WORD COUNT ====================
-    function updateWordCount() {
-      const text = document.getElementById('answerText').value;
-      const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-      document.getElementById('wordCount').textContent = words;
-    }
-
-    // ==================== CAMERA ====================
-    async function toggleCamera() {
-      if (cameraEnabled) {
-        stopCamera();
-      } else {
-        startCamera();
-      }
-    }
-
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        mediaStream = stream;
-        document.getElementById('videoPreview').srcObject = stream;
-        document.getElementById('videoPreview').style.display = 'block';
-        document.getElementById('videoPlaceholder').style.display = 'none';
-        document.getElementById('cameraBtn').classList.add('active');
-        document.getElementById('recordingIndicator').style.display = 'flex';
-        cameraEnabled = true;
-      } catch (err) {
-        alert('❌ Camera access denied. Please enable in browser settings.');
-      }
-    }
-
-    function stopCamera() {
-      if (mediaStream) {
-        mediaStream.getVideoTracks().forEach(track => track.stop());
-      }
-      document.getElementById('videoPreview').style.display = 'none';
-      document.getElementById('videoPlaceholder').style.display = 'flex';
-      document.getElementById('cameraBtn').classList.remove('active');
-      document.getElementById('recordingIndicator').style.display = 'none';
-      cameraEnabled = false;
-    }
-
-    // ==================== MICROPHONE ====================
-    function toggleMicrophone() {
-      const btn = document.getElementById('micBtn');
-      if (isListening) {
-        stopSpeechRecognition();
-        btn.classList.remove('active');
-      } else {
-        startSpeechRecognition();
-        btn.classList.add('active');
-      }
-    }
-
-    function initSpeechRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        console.log('Speech Recognition not supported');
-        return;
-      }
-
-      recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-
-      recognition.onstart = () => { isListening = true; };
-      recognition.onend = () => { isListening = false; };
-
-      recognition.onresult = (event) => {
-        let interimTranscript = '';
-        let finalTranscript = '';
-
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript + ' ';
-          } else {
-            interimTranscript += transcript;
-          }
-        }
-
-        const textarea = document.getElementById('answerText');
-        textarea.value = textarea.value + finalTranscript + interimTranscript;
-        updateWordCount();
-      };
-    }
-
-    function startSpeechRecognition() {
-      if (!recognition) initSpeechRecognition();
-      if (recognition) recognition.start();
-    }
-
-    function stopSpeechRecognition() {
-      if (recognition) recognition.stop();
-    }
-
-    // ==================== SUBMISSION ====================
-    function submitInterview() {
-      saveAnswer();
-
-      localStorage.setItem('interviewAnswers', JSON.stringify(answers));
-      localStorage.setItem('interviewCompleted', 'true');
-      localStorage.setItem('completedAt', new Date().toISOString());
-
-      window.location.href = 'feedback.html';
-    }
-
-    function endInterview() {
-      if (confirm('⚠️ Are you sure you want to end the interview? Your progress will be saved.')) {
-        submitInterview();
-      }
-    }
-
-    function showHelp() {
-      alert('❓ Interview Tips:\n\n1. Read each question carefully\n2. Use STAR method for behavioral questions\n3. Provide specific examples\n4. Speak clearly and maintain eye contact\n5. Take a moment to think before responding\n6. Complete all questions to submit');
-    }
-
-    // ==================== CLEANUP ====================
-    window.addEventListener('beforeunload', () => {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-      }
-      if (recognition) {
-        recognition.stop();
-      }
-    });
-  </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interview Pro - AI Mock Interview System</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
+    .btn-icon {
+      width: 40px;
+      height: 40px;
       padding: 0;
-      box-sizing: border-box;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
     }
 
-    html, body {
-      height: 100%;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #0A0F1C;
-      color: #FFFFFF;
-      overflow: hidden;
+    .btn-icon:hover:not(:disabled) {
+      background: rgba(79, 70, 229, 0.2);
+      border-color: var(--primary);
+      color: var(--primary);
     }
 
-    body {
-      display: grid;
-      grid-template-rows: 70px 1fr 80px;
-      grid-template-columns: 1fr;
+    .btn-icon.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
     }
 
-    /* BACKGROUND BLOBS */
-    .blob {
+    .btn-lg {
+      padding: 16px 24px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    /* ============================================
+       TOAST NOTIFICATIONS
+       ============================================ */
+
+    #toastContainer {
       position: fixed;
-      border-radius: 50%;
-      filter: blur(100px);
-      opacity: 0.05;
+      top: 100px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       pointer-events: none;
-      z-index: 1;
     }
 
-    .blob-1 {
-      width: 500px;
-      height: 500px;
-      background: #6366F1;
-      left: -250px;
-      top: 5%;
-      animation: blob-float 12s infinite ease-in-out;
-    }
-
-    .blob-2 {
-      width: 400px;
-      height: 400px;
-      background: #10B981;
-      right: -200px;
-      bottom: 0%;
-      animation: blob-float 15s infinite ease-in-out 2s;
-    }
-
-    @keyframes blob-float {
-      0%, 100% { transform: translate(0, 0); }
-      33% { transform: translate(40px, -60px); }
-      66% { transform: translate(-20px, 40px); }
-    }
-
-    /* ==================== HEADER ==================== */
-    .header {
-      background: #111827;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      padding: 0 32px;
-      gap: 40px;
-      position: relative;
-      z-index: 100;
-    }
-
-    .header-left {
+    .toast {
       display: flex;
       align-items: center;
       gap: 12px;
-      white-space: nowrap;
-    }
-
-    .header-title {
-      font-size: 18px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #6366F1, #8B5CF6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .header-center {
-      display: flex;
-      justify-content: center;
-    }
-
-    .interview-badge {
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.4);
-      padding: 8px 20px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #A5B4FC;
-      letter-spacing: 0.3px;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      white-space: nowrap;
-    }
-
-    .header-stat {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .stat-value {
-      color: #6366F1;
-      font-weight: 700;
-      font-size: 16px;
-    }
-
-    .timer-badge {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-family: 'Courier New', monospace;
-      font-size: 16px;
-      font-weight: 700;
-      color: #FCA5A5;
-      min-width: 70px;
-      text-align: center;
-    }
-
-    .timer-badge.warning {
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
-      border-color: rgba(245, 158, 11, 0.3);
-      color: #FCD34D;
-    }
-
-    .timer-badge.critical {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(239, 68, 68, 0.15));
-      border-color: rgba(239, 68, 68, 0.5);
-      color: #FCA5A5;
-      animation: pulse-timer 1s infinite;
-    }
-
-    @keyframes pulse-timer {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
-
-    .exit-btn {
-      background: rgba(239, 68, 68, 0.1);
-      border: 2px solid rgba(239, 68, 68, 0.4);
-      color: #FCA5A5;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 200ms ease;
-    }
-
-    .exit-btn:hover {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: #FCA5A5;
-    }
-
-    /* ==================== MAIN CONTENT ==================== */
-    .main-content {
-      display: grid;
-      grid-template-columns: 1fr 45%;
-      gap: 32px;
-      padding: 32px;
-      overflow: hidden;
-      position: relative;
-      z-index: 10;
-    }
-
-    /* LEFT PANEL */
-    .left-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      overflow-y: auto;
-      padding-right: 16px;
-    }
-
-    .left-panel::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .left-panel::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .left-panel::-webkit-scrollbar-thumb {
-      background: rgba(99, 102, 241, 0.2);
-      border-radius: 3px;
-    }
-
-    .left-panel::-webkit-scrollbar-thumb:hover {
-      background: rgba(99, 102, 241, 0.4);
-    }
-
-    .progress-bar {
-      height: 4px;
-      background: rgba(99, 102, 241, 0.1);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #6366F1, #8B5CF6);
-      width: 20%;
-      transition: width 300ms ease;
-    }
-
-    .question-tags {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .tag {
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      padding: 6px 12px;
-      border-radius: 16px;
-      font-size: 11px;
-      font-weight: 600;
-      color: #A5B4FC;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    .tag.tip {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: rgba(16, 185, 129, 0.3);
-      color: #6EE7B7;
-    }
-
-    .question-card {
-      background: #111827;
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      border-left: 3px solid #6366F1;
-      border-radius: 12px;
-      padding: 24px;
-      animation: slideInRight 400ms ease-out;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      animation: slideInRight 0.3s ease-out;
+      pointer-events: auto;
     }
 
     @keyframes slideInRight {
       from {
         opacity: 0;
-        transform: translateX(20px);
+        transform: translateX(100px);
       }
       to {
         opacity: 1;
@@ -1273,719 +635,749 @@
       }
     }
 
-    .question-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: #6366F1;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
+    .toast.success {
+      border-color: var(--success);
     }
 
-    .question-text {
-      font-size: 20px;
-      font-weight: 500;
-      line-height: 1.6;
-      color: #FFFFFF;
+    .toast.success .toast-icon {
+      color: var(--success);
     }
 
-    .answer-section {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .toast.error {
+      border-color: var(--error);
     }
 
-    .answer-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: #A5B4FC;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
+    .toast.error .toast-icon {
+      color: var(--error);
     }
 
-    .word-count {
-      color: #6366F1;
-      font-weight: 700;
-    }
-
-    .answer-textarea {
-      background: #1F2937;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 16px;
-      color: #FFFFFF;
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 15px;
-      line-height: 1.7;
-      min-height: 180px;
-      resize: vertical;
-      transition: all 200ms ease;
-    }
-
-    .answer-textarea::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
-
-    .answer-textarea:focus {
-      outline: none;
-      border-color: #6366F1;
-      box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
-    }
-
-    .nav-buttons {
-      display: flex;
-      gap: 12px;
-      margin-top: 8px;
-    }
-
-    .nav-btn {
-      flex: 1;
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: rgba(255, 255, 255, 0.7);
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 200ms ease;
-    }
-
-    .nav-btn:hover {
-      border-color: rgba(99, 102, 241, 0.5);
-      color: #A5B4FC;
-      background: rgba(99, 102, 241, 0.08);
-    }
-
-    .nav-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* RIGHT PANEL - CAMERA */
-    .right-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .camera-card {
-      background: #111827;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .camera-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .camera-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #A5B4FC;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    .camera-controls {
-      display: flex;
-      gap: 8px;
-    }
-
-    .camera-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: none;
-      background: #6366F1;
-      color: white;
+    .toast-icon {
       font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 200ms ease;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
     }
 
-    .camera-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
-    }
-
-    .camera-btn.off {
-      background: #374151;
-      box-shadow: 0 4px 12px rgba(55, 65, 81, 0.2);
-    }
-
-    .camera-btn.recording {
-      background: #EF4444;
-      animation: pulse-camera 1s infinite;
-    }
-
-    @keyframes pulse-camera {
-      0%, 100% { box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
-      50% { box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5); }
-    }
-
-    .video-wrapper {
-      flex: 1;
-      background: #0F1419;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #videoPreview {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      -webkit-transform: scaleX(-1);
-      transform: scaleX(-1);
-    }
-
-    .video-placeholder {
-      text-align: center;
-      font-size: 48px;
-      color: rgba(255, 255, 255, 0.2);
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .video-placeholder span {
+    .toast-message {
       font-size: 14px;
-      color: rgba(255, 255, 255, 0.4);
+      color: var(--text-primary);
     }
 
-    .recording-badge {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 20px;
-      padding: 6px 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #FCA5A5;
-      backdrop-filter: blur(10px);
-    }
+    /* ============================================
+       RESPONSIVE DESIGN
+       ============================================ */
 
-    .recording-dot {
-      width: 8px;
-      height: 8px;
-      background: #EF4444;
-      border-radius: 50%;
-      animation: pulse-dot 1s infinite;
-    }
-
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .tips-panel {
-      background: #1F2937;
-      padding: 16px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .tips-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: #A5B4FC;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    .tip-item {
-      background: rgba(99, 102, 241, 0.08);
-      border-left: 2px solid #6366F1;
-      padding: 10px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      line-height: 1.5;
-      color: rgba(255, 255, 255, 0.8);
-      animation: fadeInTip 300ms ease;
-    }
-
-    @keyframes fadeInTip {
-      from {
-        opacity: 0;
-        transform: translateY(-8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* ==================== FOOTER ==================== */
-    .footer {
-      background: #111827;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 32px;
-      position: relative;
-      z-index: 100;
-    }
-
-    .footer-left {
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .footer-center {
-      display: flex;
-      gap: 16px;
-    }
-
-    .submit-btn {
-      background: linear-gradient(135deg, #6366F1, #8B5CF6);
-      border: none;
-      color: white;
-      padding: 12px 32px;
-      border-radius: 24px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 200ms ease;
-      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
-    }
-
-    .submit-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      filter: brightness(1.1);
-      box-shadow: 0 12px 32px rgba(99, 102, 241, 0.35);
-    }
-
-    .submit-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .save-btn {
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: rgba(255, 255, 255, 0.7);
-      padding: 10px 24px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 200ms ease;
-    }
-
-    .save-btn:hover {
-      border-color: rgba(99, 102, 241, 0.5);
-      color: #A5B4FC;
-      background: rgba(99, 102, 241, 0.08);
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 1200px) {
-      .main-content {
+    @media (max-width: 1024px) {
+      .main-container {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 24px;
       }
 
-      .right-panel {
-        display: none;
+      .column-left {
+        max-height: auto;
+        position: static;
+      }
+
+      .camera-container {
+        min-height: 400px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar-container {
+        padding: 0 16px;
+      }
+
+      .main-container {
+        padding: 16px;
+        gap: 16px;
+      }
+
+      .camera-container {
+        min-height: 300px;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .btn-lg {
+        padding: 12px 16px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .camera-container {
+        min-height: 250px;
+      }
+
+      #cameraEmpty {
+        padding: 24px;
+      }
+
+      .empty-icon {
+        font-size: 40px;
+      }
+
+      #cameraEmpty h3 {
+        font-size: 16px;
+      }
+
+      .card {
+        padding: 12px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Background Blobs -->
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-left">
-      <span style="font-size: 24px;">🧠</span>
-      <div class="header-title">Interview Pro</div>
-    </div>
-
-    <div class="header-center">
-      <div class="interview-badge" id="interviewBadge">Behavioral Interview</div>
-    </div>
-
-    <div class="header-right">
-      <div class="header-stat">
-        Q <span class="stat-value" id="questionCounter">1</span>/10
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <i class="fas fa-microphone-alt"></i>
+        AI Mock Interview
       </div>
-      <div class="timer-badge" id="timerDisplay">30:00</div>
-      <button class="exit-btn" onclick="endInterview()">End Interview</button>
-    </div>
-  </header>
-
-  <!-- MAIN CONTENT -->
-  <main class="main-content">
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
+      <div class="timer-badge">
+        <i class="fas fa-hourglass-end"></i>
+        <span id="timer">30:00</span>
       </div>
-
-      <div class="question-tags">
-        <div class="tag" id="questionTypeTag">Behavioral</div>
-        <div class="tag tip">💡 STAR Method Recommended</div>
-      </div>
-
-      <div class="question-card">
-        <div class="question-label" id="questionNumber">Question 1</div>
-        <div class="question-text" id="questionText">Loading question...</div>
-      </div>
-
-      <div class="answer-section">
-        <div class="answer-label">
-          <span>✏️ Your Answer</span>
-          <span class="word-count" id="wordCount">Words: 0</span>
-        </div>
-        <textarea class="answer-textarea" id="answerText" placeholder="Type your answer here... (Tip: Use the STAR method for behavioral questions)" spellcheck="true"></textarea>
-      </div>
-
-      <div class="nav-buttons">
-        <button class="nav-btn" id="prevBtn" onclick="previousQuestion()" disabled>← Previous</button>
-        <button class="nav-btn" id="nextBtn" onclick="nextQuestion()">Next →</button>
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span id="statusText">Initializing camera...</span>
       </div>
     </div>
+  </nav>
 
-    <!-- RIGHT PANEL - CAMERA -->
-    <div class="right-panel">
+  <!-- MAIN CONTAINER -->
+  <main class="main-container">
+    <!-- LEFT COLUMN: CAMERA -->
+    <section class="column column-left">
       <div class="camera-card">
         <div class="camera-header">
-          <div class="camera-title">📹 Interview Camera</div>
-          <div class="camera-controls">
-            <button class="camera-btn" id="cameraBtnHeader" onclick="toggleCamera()">📷</button>
-            <button class="camera-btn off" id="micBtnHeader" onclick="toggleMicrophone()">🎤</button>
+          <h2>Your Video</h2>
+          <div class="recording-indicator" id="recordingIndicator" style="display: none;">
+            <span class="record-dot"></span>
+            <span>LIVE</span>
           </div>
         </div>
-
-        <div class="video-wrapper">
-          <video id="videoPreview" autoplay playsinline></video>
-          <div class="video-placeholder" id="videoPlaceholder">
-            <div>📷</div>
-            <span>Camera is off</span>
+        <div class="camera-container">
+          <video id="interviewCamera" autoplay muted playsinline></video>
+          <div id="cameraEmpty">
+            <div class="empty-icon">
+              <i class="fas fa-video"></i>
+            </div>
+            <h3>Camera Access Needed</h3>
+            <p>Enable your camera to begin the interview and let us see your expressions.</p>
+            <div id="cameraError"></div>
+            <button id="enableCameraBtn" class="btn btn-primary">
+              <i class="fas fa-video"></i>
+              Enable Camera
+            </button>
           </div>
-          <div class="recording-badge">
-            <span class="recording-dot"></span>
-            <span>RECORDING</span>
+          <div id="recordingBadge">
+            <span class="record-dot"></span>
+            <span>LIVE</span>
           </div>
-        </div>
-
-        <div class="tips-panel">
-          <div class="tips-title">✨ Live Tips</div>
-          <div class="tip-item">Maintain eye contact with the camera</div>
-          <div class="tip-item">Speak clearly and at a steady pace</div>
-          <div class="tip-item">Take a moment to think before answering</div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- RIGHT COLUMN: INTERVIEW -->
+    <section class="column column-right">
+      <!-- QUESTION CARD -->
+      <div class="card question-card">
+        <div class="card-header">
+          <div>
+            <div class="question-number" id="questionNum">Question 1</div>
+            <h3 id="questionCountLabel">1 / 10</h3>
+          </div>
+        </div>
+        <div class="question-content" id="questionText">Loading question...</div>
+        <div class="question-nav" id="questionNav" style="display: none;">
+          <button id="prevBtn" class="btn btn-icon" title="Previous question">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div class="question-counter">
+            <span id="questionCount">1</span> / <span id="totalCount">10</span>
+          </div>
+          <button id="nextBtn" class="btn btn-icon" title="Next question">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ANSWER CARD -->
+      <div class="card answer-card">
+        <div class="card-header">
+          <h3>Your Answer</h3>
+        </div>
+        <div class="answer-input-wrapper">
+          <textarea id="answerText" class="answer-input" placeholder="Type your answer here or use the microphone button to speak..." spellcheck="true"></textarea>
+          <div id="listeningIndicator">
+            <span class="listening-pulse"></span>
+            <span>Listening...</span>
+          </div>
+        </div>
+        <div class="word-count-bar">
+          <span>Words: <strong id="wordCount">0</strong>/500</span>
+          <div class="progress-bar">
+            <div id="wordProgress" style="width: 0%;"></div>
+          </div>
+        </div>
+        <div class="answer-actions">
+          <div style="display: flex; gap: 12px;">
+            <button id="micBtn" class="btn btn-icon" title="Microphone">
+              <i class="fas fa-microphone"></i>
+            </button>
+            <button id="clearBtn" class="btn btn-icon" title="Clear answer">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <button id="submitNextBtn" class="btn btn-primary btn-lg btn-block" style="display: flex;">
+            <i class="fas fa-arrow-right"></i>
+            Submit & Next
+          </button>
+          <button id="submitFinalBtn" class="btn btn-success btn-lg btn-block" style="display: none;">
+            <i class="fas fa-check"></i>
+            Complete Interview & Get Feedback
+          </button>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer-left">Answer all 10 questions to submit and get feedback</div>
-    <div class="footer-center">
-      <button class="submit-btn" id="submitBtn" onclick="submitInterview()">
-        ➤ Submit & Get Feedback
-      </button>
-      <button class="save-btn">💾 Save Draft</button>
-    </div>
-  </footer>
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toastContainer"></div>
 
+  <!-- SCRIPTS -->
   <script>
-    // ==================== VARIABLES ====================
-    let currentQuestionIndex = 0;
-    let mediaStream = null;
-    let recognition = null;
-    let isListening = false;
-    let timeRemaining = 1800; // 30 minutes in seconds
-    let answers = [];
-    let cameraEnabled = false;
+/* ============================================
+   INTERVIEW SYSTEM - JavaScript
+   ============================================ */
 
-    const questions = [
-      { type: 'Behavioral', text: 'Tell me about a time when you had to work with a difficult team member. How did you handle it?' },
-      { type: 'Behavioral', text: 'Describe a project where you took initiative and led the team to success.' },
-      { type: 'Technical', text: 'Explain your approach to solving complex technical problems.' },
-      { type: 'Behavioral', text: 'Can you tell me about a failure you experienced and what you learned from it?' },
-      { type: 'Technical', text: 'How do you stay updated with the latest technologies and industry trends?' },
-      { type: 'Behavioral', text: 'Describe a situation where you had to meet a tight deadline under pressure.' },
-      { type: 'Behavioral', text: 'What are your short-term and long-term career goals?' },
-      { type: 'Technical', text: 'How would you approach debugging a complex system issue?' },
-      { type: 'Behavioral', text: 'Tell me why you are interested in this position and our company.' },
-      { type: 'Technical', text: 'Describe your ideal team environment and how you contribute to it.' }
-    ];
+// ============================================
+// DOM ELEMENTS
+// ============================================
 
-    // ==================== SPEECH RECOGNITION ====================
-    function initSpeechRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        console.log('Speech Recognition not available');
-        return;
-      }
+const videoEl = document.getElementById('interviewCamera');
+const cameraEmptyEl = document.getElementById('cameraEmpty');
+const cameraErrorEl = document.getElementById('cameraError');
+const recordingBadgeEl = document.getElementById('recordingBadge');
+const recordingIndicatorEl = document.getElementById('recordingIndicator');
+const enableCameraBtn = document.getElementById('enableCameraBtn');
+const statusTextEl = document.getElementById('statusText');
+const statusDotEl = document.querySelector('.status-dot');
 
-      recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
+const answerTextEl = document.getElementById('answerText');
+const micBtn = document.getElementById('micBtn');
+const clearBtn = document.getElementById('clearBtn');
+const wordCountEl = document.getElementById('wordCount');
+const wordProgressEl = document.getElementById('wordProgress');
+const listeningIndicatorEl = document.getElementById('listeningIndicator');
+const timerEl = document.getElementById('timer');
 
-      recognition.onstart = function() {
-        isListening = true;
-      };
+const questionTextEl = document.getElementById('questionText');
+const questionNumEl = document.getElementById('questionNum');
+const questionCountEl = document.getElementById('questionCount');
+const totalCountEl = document.getElementById('totalCount');
+const questionNavEl = document.getElementById('questionNav');
+const prevBtnEl = document.getElementById('prevBtn');
+const nextBtnEl = document.getElementById('nextBtn');
 
-      recognition.onend = function() {
-        isListening = false;
-      };
+const submitNextBtnEl = document.getElementById('submitNextBtn');
+const submitFinalBtnEl = document.getElementById('submitFinalBtn');
+const toastContainerEl = document.getElementById('toastContainer');
 
-      recognition.onresult = function(event) {
-        let interimTranscript = '';
-        let finalTranscript = '';
+// ============================================
+// STATE MANAGEMENT
+// ============================================
 
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript + ' ';
-          } else {
-            interimTranscript += transcript;
-          }
-        }
+let state = {
+  mediaStream: null,
+  isCameraOn: false,
+  isRecording: false,
+  isListening: false,
+  currentQuestionIndex: 0,
+  questions: [],
+  answers: {},
+  timerInterval: null,
+  timeRemaining: 30 * 60,
+  speechRecognition: null,
+};
 
-        const textarea = document.getElementById('answerText');
-        textarea.value = textarea.value + finalTranscript + interimTranscript;
-        updateWordCount();
-      };
+// ============================================
+// INITIALIZATION
+// ============================================
 
-      recognition.onerror = function(event) {
-        console.error('Speech error:', event.error);
-      };
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('🎥 Interview System Initializing...');
+  console.log('📍 Environment:', {
+    protocol: location.protocol,
+    hostname: location.hostname,
+    port: location.port
+  });
+  
+  await loadQuestions();
+  initSpeechRecognition(); // Initialize speech before event listeners
+  setupEventListeners();
+  loadQuestion(0);
+  startTimer();
+  attemptAutoCamera();
+  
+  console.log('✅ All systems ready');
+});
+
+// ============================================
+// CAMERA FUNCTIONALITY
+// ============================================
+
+async function initCamera() {
+  try {
+    console.log('📷 Requesting camera access...');
+    console.log('🔍 Browser support check:', {
+      hasMediaDevices: !!navigator.mediaDevices,
+      hasGetUserMedia: !!navigator.mediaDevices?.getUserMedia,
+      isHTTPS: location.protocol === 'https:',
+      isLocalhost: location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+    });
+    
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('Camera not supported in this browser. Use Chrome, Firefox, or Edge.');
     }
 
-    function startSpeechRecognition() {
-      if (!recognition) {
-        initSpeechRecognition();
-      }
-      if (recognition) {
-        recognition.start();
-      }
+    // Stop any existing streams
+    if (state.mediaStream) {
+      state.mediaStream.getTracks().forEach(track => track.stop());
     }
 
-    function stopSpeechRecognition() {
-      if (recognition) {
-        recognition.stop();
-      }
-    }
-
-    // ==================== WORD COUNT ====================
-    function updateWordCount() {
-      const text = document.getElementById('answerText').value;
-      const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-      document.getElementById('wordCount').textContent = `Words: ${words}`;
-    }
-
-    // ==================== TIMER ====================
-    function updateTimer() {
-      const minutes = Math.floor(timeRemaining / 60);
-      const seconds = timeRemaining % 60;
-      const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-      
-      const timerDisplay = document.getElementById('timerDisplay');
-      timerDisplay.textContent = timeStr;
-
-      // Change color based on time remaining
-      if (timeRemaining < 60) {
-        timerDisplay.classList.add('critical');
-        timerDisplay.classList.remove('warning');
-      } else if (timeRemaining < 300) {
-        timerDisplay.classList.add('warning');
-        timerDisplay.classList.remove('critical');
-      } else {
-        timerDisplay.classList.remove('warning', 'critical');
-      }
-
-      if (timeRemaining > 0) {
-        timeRemaining--;
-        setTimeout(updateTimer, 1000);
-      } else {
-        submitInterview();
-      }
-    }
-
-    // ==================== CAMERA ====================
-    async function toggleCamera() {
-      if (cameraEnabled) {
-        if (mediaStream) {
-          mediaStream.getVideoTracks().forEach(track => track.stop());
-        }
-        document.getElementById('videoPreview').style.display = 'none';
-        document.getElementById('videoPlaceholder').style.display = 'flex';
-        document.getElementById('cameraBtnHeader').style.background = '#6366F1';
-        cameraEnabled = false;
-      } else {
-        try {
-          let stream = mediaStream;
-          if (!stream) {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            mediaStream = stream;
-          }
-          document.getElementById('videoPreview').srcObject = stream;
-          document.getElementById('videoPreview').style.display = 'block';
-          document.getElementById('videoPlaceholder').style.display = 'none';
-          document.getElementById('cameraBtnHeader').style.background = '#EF4444';
-          cameraEnabled = true;
-        } catch (err) {
-          alert('Camera access denied. Please enable in browser settings.');
-        }
-      }
-    }
-
-    function toggleMicrophone() {
-      const btn = document.getElementById('micBtnHeader');
-      btn.classList.toggle('recording');
-      if (btn.classList.contains('recording')) {
-        startSpeechRecognition();
-      } else {
-        stopSpeechRecognition();
-      }
-    }
-
-    // ==================== QUESTIONS ====================
-    function loadQuestion() {
-      const q = questions[currentQuestionIndex];
-      
-      // Update UI
-      document.getElementById('questionText').textContent = q.text;
-      document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1}`;
-      document.getElementById('questionTypeTag').textContent = q.type;
-      document.getElementById('questionCounter').textContent = currentQuestionIndex + 1;
-      document.getElementById('interviewBadge').textContent = `${q.type} Interview`;
-      
-      // Update progress bar
-      const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-      document.getElementById('progressFill').style.width = progress + '%';
-      
-      // Clear answer
-      document.getElementById('answerText').value = '';
-      updateWordCount();
-      
-      // Update button states
-      document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
-      document.getElementById('nextBtn').textContent = currentQuestionIndex === questions.length - 1 ? 'Submit ➤' : 'Next →';
-    }
-
-    function nextQuestion() {
-      const answer = document.getElementById('answerText').value;
-      
-      if (!answer.trim()) {
-        alert('⚠️ Please provide an answer before proceeding.');
-        return;
-      }
-
-      answers[currentQuestionIndex] = {
-        question: questions[currentQuestionIndex].text,
-        answer: answer,
-        type: questions[currentQuestionIndex].type,
-        timestamp: new Date().toISOString()
-      };
-
-      currentQuestionIndex++;
-
-      if (currentQuestionIndex < questions.length) {
-        loadQuestion();
-      } else {
-        submitInterview();
-      }
-    }
-
-    function previousQuestion() {
-      if (currentQuestionIndex > 0) {
-        const answer = document.getElementById('answerText').value;
-        answers[currentQuestionIndex] = {
-          question: questions[currentQuestionIndex].text,
-          answer: answer,
-          type: questions[currentQuestionIndex].type,
-          timestamp: new Date().toISOString()
-        };
-        
-        currentQuestionIndex--;
-        loadQuestion();
-      }
-    }
-
-    function submitInterview() {
-      const answer = document.getElementById('answerText').value;
-      if (answer.trim()) {
-        answers[currentQuestionIndex] = {
-          question: questions[currentQuestionIndex].text,
-          answer: answer,
-          type: questions[currentQuestionIndex].type,
-          timestamp: new Date().toISOString()
-        };
-      }
-
-      localStorage.setItem('interviewAnswers', JSON.stringify(answers));
-      localStorage.setItem('interviewCompleted', 'true');
-      localStorage.setItem('completedAt', new Date().toISOString());
-
-      window.location.href = 'feedback.html';
-    }
-
-    function endInterview() {
-      if (confirm('Are you sure you want to end the interview? Your progress will be saved.')) {
-        submitInterview();
-      }
-    }
-
-    // ==================== INIT ====================
-    window.addEventListener('load', function() {
-      if (!localStorage.getItem('isAuthenticated')) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      loadQuestion();
-      updateTimer();
-      initSpeechRecognition();
-      toggleCamera(); // Auto-enable camera
-      
-      document.getElementById('answerText').addEventListener('input', updateWordCount);
+    console.log('📷 Calling getUserMedia with constraints: video, no audio');
+    state.mediaStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        facingMode: 'user'
+      },
+      audio: false
     });
 
-    // ==================== CLEANUP ====================
-    window.addEventListener('beforeunload', function(e) {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
+    console.log('✅ getUserMedia succeeded, stream:', state.mediaStream);
+    console.log('📹 Setting video stream to element...');
+    
+    // Attach stream to video element
+    videoEl.srcObject = state.mediaStream;
+    console.log('✅ Stream attached to video element');
+    
+    // Wait for video metadata to load
+    await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        console.warn('⚠️  Metadata timeout, resolving anyway');
+        resolve();
+      }, 2000);
+      
+      videoEl.onloadedmetadata = () => {
+        console.log('✅ Video metadata loaded');
+        clearTimeout(timeout);
+        resolve();
+      };
+    });
+
+    // Ensure video plays
+    console.log('▶️  Attempting to play video...');
+    await videoEl.play().catch(e => {
+      console.warn('⚠️  Auto-play warning (may be browser policy):', e.message);
+    });
+    console.log('▶️  Video playing');
+
+    // Update state and UI
+    state.isCameraOn = true;
+    videoEl.classList.add('active');
+    cameraEmptyEl.classList.add('hidden');
+    recordingBadgeEl.style.display = 'flex';
+    recordingIndicatorEl.style.display = 'flex';
+    enableCameraBtn.style.display = 'none';
+    
+    updateStatus('Camera Active', true);
+    showToast('✅ Camera enabled successfully', 'success');
+    
+    console.log('✅ Camera initialized successfully - video should be visible now');
+    return true;
+
+  } catch (error) {
+    console.error('❌ Camera error:', error);
+    console.error('❌ Error type:', error.name);
+    console.error('❌ Error message:', error.message);
+    handleCameraError(error);
+    return false;
+  }
+}
+
+function handleCameraError(error) {
+  let errorMessage = 'Camera access failed';
+
+  console.log('🔴 Handling error:', error.name || error.type || 'Unknown');
+
+  if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+    errorMessage = '❌ Camera permission denied. Please allow camera access in your browser settings and refresh the page.';
+  } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+    errorMessage = '❌ No camera device detected. Please connect a camera and refresh the page.';
+  } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+    errorMessage = '❌ Camera is in use by another application. Please close it and try again.';
+  } else if (error.name === 'NotSupportedError' || error.message?.includes('https')) {
+    errorMessage = '❌ Camera not supported or HTTPS required. Use Chrome, Firefox, or Edge over HTTPS.';
+  } else if (error.message?.includes('HTTPS')) {
+    errorMessage = '❌ HTTPS connection required for camera access. Use a secure connection.';
+  }
+
+  console.error('🔴 Error message for user:', errorMessage);
+  
+  cameraErrorEl.textContent = errorMessage;
+  cameraErrorEl.style.display = 'block';
+  updateStatus('Camera unavailable', false);
+}
+
+function stopCamera() {
+  console.log('⏹️  Stopping camera...');
+  if (state.mediaStream) {
+    console.log('🛑 Stopping all tracks...');
+    state.mediaStream.getTracks().forEach(track => {
+      console.log('🛑 Stopping track:', track.kind, track.label);
+      track.stop();
+    });
+    state.mediaStream = null;
+  }
+  
+  state.isCameraOn = false;
+  videoEl.srcObject = null;
+  videoEl.classList.remove('active');
+  recordingBadgeEl.style.display = 'none';
+  recordingIndicatorEl.style.display = 'none';
+  cameraEmptyEl.classList.remove('hidden');
+  enableCameraBtn.style.display = 'flex';
+  
+  console.log('✅ Camera stopped');
+}
+
+async function attemptAutoCamera() {
+  console.log('🎯 Attempting automatic camera initialization...');
+  try {
+    const success = await initCamera();
+    if (success) {
+      console.log('✅ Automatic camera initialization successful');
+    } else {
+      console.log('ℹ️  Automatic camera initialization skipped - user can enable manually');
+    }
+  } catch (e) {
+    console.log('ℹ️  Auto-init skipped - user will click button:', e.message);
+  }
+}
+
+// ============================================
+// TIMER
+// ============================================
+
+function startTimer() {
+  state.timerInterval = setInterval(() => {
+    state.timeRemaining--;
+    updateTimerDisplay();
+
+    if (state.timeRemaining <= 0) {
+      clearInterval(state.timerInterval);
+      submitFinal();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(state.timeRemaining / 60);
+  const seconds = state.timeRemaining % 60;
+  timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+// ============================================
+// QUESTIONS
+// ============================================
+
+async function loadQuestions() {
+  try {
+    const response = await fetch('data/questions.json');
+    const data = await response.json();
+    state.questions = data.questions || [];
+    
+    console.log(`✅ Loaded ${state.questions.length} questions`);
+  } catch (error) {
+    console.error('Error loading questions:', error);
+    state.questions = generateSampleQuestions();
+  }
+}
+
+function generateSampleQuestions() {
+  return [
+    { id: 1, question: 'Tell me about your background and why you\'re interested in this position.' },
+    { id: 2, question: 'Describe a time when you had to overcome a challenge at work.' },
+    { id: 3, question: 'What are your greatest strengths and how do they apply to this role?' },
+    { id: 4, question: 'Tell me about a project you\'re proud of and your role in it.' },
+    { id: 5, question: 'How do you handle working with difficult team members?' }
+  ];
+}
+
+function loadQuestion(index) {
+  if (index < 0 || index >= state.questions.length) return;
+
+  state.currentQuestionIndex = index;
+  const question = state.questions[index];
+
+  questionTextEl.textContent = question.question;
+  questionNumEl.textContent = 'Question ' + (index + 1);
+  questionCountEl.textContent = index + 1;
+  totalCountEl.textContent = state.questions.length;
+
+  answerTextEl.value = state.answers[index] || '';
+  updateWordCount();
+
+  if (state.questions.length > 1) {
+    questionNavEl.style.display = 'flex';
+    prevBtnEl.disabled = index === 0;
+    nextBtnEl.disabled = index === state.questions.length - 1;
+  }
+
+  const isLastQuestion = index === state.questions.length - 1;
+  if (isLastQuestion) {
+    submitNextBtnEl.style.display = 'none';
+    submitFinalBtnEl.style.display = 'flex';
+  } else {
+    submitNextBtnEl.style.display = 'flex';
+    submitFinalBtnEl.style.display = 'none';
+  }
+}
+
+// ============================================
+// ANSWER TRACKING
+// ============================================
+
+function updateWordCount() {
+  const text = answerTextEl.value.trim();
+  const words = text.length > 0 ? text.split(/\s+/).length : 0;
+  
+  wordCountEl.textContent = words;
+  
+  const progress = Math.min((words / 500) * 100, 100);
+  wordProgressEl.style.width = progress + '%';
+}
+
+function saveCurrentAnswer() {
+  state.answers[state.currentQuestionIndex] = answerTextEl.value;
+}
+
+function nextQuestion() {
+  saveCurrentAnswer();
+  if (state.currentQuestionIndex < state.questions.length - 1) {
+    loadQuestion(state.currentQuestionIndex + 1);
+  }
+}
+
+function prevQuestion() {
+  saveCurrentAnswer();
+  if (state.currentQuestionIndex > 0) {
+    loadQuestion(state.currentQuestionIndex - 1);
+  }
+}
+
+function clearAnswer() {
+  if (confirm('Are you sure you want to clear your answer?')) {
+    answerTextEl.value = '';
+    updateWordCount();
+    showToast('Answer cleared', 'success');
+  }
+}
+
+// ============================================
+// SPEECH RECOGNITION
+// ============================================
+
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  if (!SpeechRecognition) {
+    console.warn('Speech Recognition not supported');
+    micBtn.disabled = true;
+    return;
+  }
+
+  state.speechRecognition = new SpeechRecognition();
+  state.speechRecognition.continuous = true;
+  state.speechRecognition.interimResults = true;
+  state.speechRecognition.lang = 'en-US';
+
+  let interimTranscript = '';
+
+  state.speechRecognition.onstart = () => {
+    state.isListening = true;
+    listeningIndicatorEl.classList.add('active');
+    micBtn.classList.add('active');
+  };
+
+  state.speechRecognition.onresult = (event) => {
+    interimTranscript = '';
+    
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+      
+      if (event.results[i].isFinal) {
+        answerTextEl.value += transcript + ' ';
+      } else {
+        interimTranscript += transcript;
       }
-      if (recognition) {
-        recognition.stop();
+    }
+    
+    updateWordCount();
+  };
+
+  state.speechRecognition.onerror = (event) => {
+    console.error('Speech recognition error:', event.error);
+    showToast('Microphone error: ' + event.error, 'error');
+  };
+
+  state.speechRecognition.onend = () => {
+    state.isListening = false;
+    listeningIndicatorEl.classList.remove('active');
+    micBtn.classList.remove('active');
+  };
+}
+
+function toggleMicrophone() {
+  if (!state.speechRecognition) {
+    showToast('Speech recognition not supported', 'error');
+    return;
+  }
+
+  if (state.isListening) {
+    state.speechRecognition.stop();
+  } else {
+    state.speechRecognition.start();
+  }
+}
+
+// ============================================
+// SUBMISSION
+// ============================================
+
+function submitNext() {
+  saveCurrentAnswer();
+  nextQuestion();
+  showToast('Answer saved', 'success');
+}
+
+function submitFinal() {
+  saveCurrentAnswer();
+  stopCamera();
+  clearInterval(state.timerInterval);
+  
+  console.log('📋 Interview Complete. Answers:', state.answers);
+  
+  localStorage.setItem('interviewAnswers', JSON.stringify(state.answers));
+  
+  setTimeout(() => {
+    window.location.href = 'feedback.html';
+  }, 1000);
+}
+
+// ============================================
+// STATUS & NOTIFICATIONS
+// ============================================
+
+function updateStatus(text, isActive = false) {
+  statusTextEl.textContent = text;
+  
+  if (isActive) {
+    statusDotEl.classList.add('active');
+  } else {
+    statusDotEl.classList.remove('active');
+  }
+}
+
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  const iconMap = {
+    success: 'fas fa-check-circle',
+    error: 'fas fa-exclamation-circle',
+    info: 'fas fa-info-circle'
+  };
+  
+  toast.innerHTML = `
+    <i class="toast-icon ${iconMap[type]}"></i>
+    <span class="toast-message">${message}</span>
+  `;
+  
+  toastContainerEl.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideInRight 0.3s ease-in-out reverse';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// ============================================
+// EVENT LISTENERS
+// ============================================
+
+function setupEventListeners() {
+  console.log('🔧 Setting up event listeners...');
+  
+  // CRITICAL: Camera button listener
+  if (enableCameraBtn) {
+    console.log('✅ Enable camera button found, adding click listener');
+    enableCameraBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      console.log('🎥 Enable camera button clicked');
+      enableCameraBtn.disabled = true;
+      enableCameraBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enabling camera...';
+      
+      const success = await initCamera();
+      console.log('📊 Camera init result:', success);
+      
+      if (!success) {
+        console.log('❌ Camera init failed, restoring button');
+        enableCameraBtn.disabled = false;
+        enableCameraBtn.innerHTML = '<i class="fas fa-video"></i>Enable Camera';
       }
     });
+  } else {
+    console.warn('⚠️  Enable camera button not found!');
+  }
+
+  prevBtnEl.addEventListener('click', prevQuestion);
+  nextBtnEl.addEventListener('click', nextQuestion);
+  submitNextBtnEl.addEventListener('click', submitNext);
+  submitFinalBtnEl.addEventListener('click', submitFinal);
+
+  clearBtn.addEventListener('click', clearAnswer);
+  answerTextEl.addEventListener('input', () => {
+    updateWordCount();
+    saveCurrentAnswer();
+  });
+
+  if (state.speechRecognition) {
+    initSpeechRecognition();
+    micBtn.addEventListener('click', toggleMicrophone);
+  }
+
+  window.addEventListener('beforeunload', () => {
+    console.log('👋 Page unloading, stopping camera...');
+    stopCamera();
+    clearInterval(state.timerInterval);
+    if (state.speechRecognition) {
+      state.speechRecognition.stop();
+    }
+  });
+
+  console.log('✅ Event listeners setup complete');
+}
+
+// ============================================
+// STARTUP
+// ============================================
+
+console.log('🚀 Interview System Ready');
   </script>
 </body>
 </html>
@@ -1994,1753 +1386,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Interview Test - Live Camera & Speech Recognition</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #0A0F1C;
-      color: #FFFFFF;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Animated Blobs */
-    .blob {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.06;
-      pointer-events: none;
-      animation: blob-float 8s infinite ease-in-out;
-      z-index: 1;
-    }
-
-    .blob-1 {
-      width: 500px;
-      height: 500px;
-      background: #6366F1;
-      left: -250px;
-      top: 10%;
-    }
-
-    .blob-2 {
-      width: 400px;
-      height: 400px;
-      background: #10B981;
-      right: -200px;
-      bottom: 10%;
-      animation-delay: 2s;
-    }
-
-    @keyframes blob-float {
-      0%, 100% { transform: translate(0, 0); }
-      50% { transform: translate(30px, -30px); }
-    }
-
-    /* Top Bar */
-    .topbar {
-      background: rgba(17, 24, 39, 0.99);
-      backdrop-filter: blur(30px);
-      border-bottom: 1px solid rgba(99, 102, 241, 0.25);
-      padding: 18px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      z-index: 100;
-      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.12);
-    }
-
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .brand-title {
-      font-size: 20px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #6366F1 0%, #10B981 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .status-bar {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .status-badge {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #6366F1;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .timer-badge {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.05) 100%);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #FCA5A5;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .recording-indicator {
-      width: 8px;
-      height: 8px;
-      background: #EF4444;
-      border-radius: 50%;
-      animation: pulse-red 1s infinite;
-    }
-
-    @keyframes pulse-red {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    /* Main Layout */
-    .interview-layout {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      position: relative;
-      z-index: 10;
-      overflow: hidden;
-      padding: 32px;
-    }
-
-    /* Left Panel - Camera (LARGE) */
-    .camera-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .video-container {
-      width: 100%;
-      height: 100%;
-      min-height: 600px;
-      background: #0F1419;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 3px solid rgba(99, 102, 241, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
-    }
-
-    #videoPreview {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      -webkit-transform: scaleX(-1);
-      transform: scaleX(-1);
-    }
-
-    .video-placeholder {
-      font-size: 20px;
-      color: rgba(255, 255, 255, 0.4);
-      text-align: center;
-    }
-
-    .media-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .media-btn {
-      padding: 14px;
-      background: rgba(99, 102, 241, 0.1);
-      border: 2px solid rgba(99, 102, 241, 0.25);
-      border-radius: 10px;
-      color: #A5B4FC;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 700;
-      transition: all 200ms ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .media-btn:hover {
-      background: rgba(99, 102, 241, 0.15);
-      border-color: #A5B4FC;
-    }
-
-    .media-btn.enabled {
-      background: #6366F1;
-      color: white;
-      border-color: #6366F1;
-    }
-
-    /* Right Panel - Answer */
-    .answer-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      overflow-y: auto;
-    }
-
-    .question-header {
-      animation: slideInUp 400ms ease-out;
-    }
-
-    .question-badge {
-      display: inline-block;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #6366F1;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
-    }
-
-    .question-text {
-      font-size: 28px;
-      font-weight: 700;
-      line-height: 1.5;
-      color: #FFFFFF;
-      margin-bottom: 8px;
-      letter-spacing: -0.5px;
-    }
-
-    /* Speech Status */
-    .speech-status {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      padding: 16px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .listening-indicator {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #10B981;
-    }
-
-    .pulse-dot {
-      width: 8px;
-      height: 8px;
-      background: #10B981;
-      border-radius: 50%;
-      animation: pulse-green 1.5s infinite;
-    }
-
-    @keyframes pulse-green {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    .listening-indicator.inactive .pulse-dot {
-      animation: none;
-      opacity: 0.3;
-    }
-
-    .listening-indicator.inactive {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    /* Answer Display */
-    .answer-display-section {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .answer-label {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: rgba(255, 255, 255, 0.95);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      letter-spacing: 0.2px;
-    }
-
-    .char-count {
-      font-size: 12px;
-      color: #6366F1;
-      font-weight: 600;
-    }
-
-    .answer-text {
-      flex: 1;
-      padding: 16px;
-      background: #1F2937;
-      border: 2px solid rgba(99, 102, 241, 0.2);
-      border-radius: 12px;
-      color: #FFFFFF;
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 14px;
-      line-height: 1.6;
-      resize: none;
-      transition: all 200ms ease;
-      margin-bottom: 12px;
-    }
-
-    .answer-text:focus {
-      outline: none;
-      border-color: #6366F1;
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
-      background: rgba(31, 41, 55, 0.9);
-    }
-
-    .answer-text.speaking {
-      border-color: #10B981;
-      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
-    }
-
-    /* Control Buttons */
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .control-btn {
-      flex: 1;
-      padding: 12px;
-      background: rgba(99, 102, 241, 0.1);
-      border: 2px solid rgba(99, 102, 241, 0.25);
-      border-radius: 10px;
-      color: #A5B4FC;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 700;
-      transition: all 200ms ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-    }
-
-    .control-btn:hover {
-      background: rgba(99, 102, 241, 0.15);
-      border-color: #A5B4FC;
-    }
-
-    .control-btn.recording {
-      background: #EF4444;
-      border-color: #EF4444;
-      color: white;
-    }
-
-    .control-btn.recording:hover {
-      background: #DC2626;
-    }
-
-    /* Action Buttons */
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 200ms ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #6366F1 0%, #7C3AED 100%);
-      color: white;
-      letter-spacing: 0.3px;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      filter: brightness(1.1);
-      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.3);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      border: 2px solid rgba(255, 255, 255, 0.15);
-      color: rgba(255, 255, 255, 0.8);
-      font-weight: 600;
-    }
-
-    .btn-secondary:hover {
-      border-color: rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgba(99, 102, 241, 0.3);
-      border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(99, 102, 241, 0.5);
-    }
-
-    /* Responsive */
-    @media (max-width: 1200px) {
-      .question-text {
-        font-size: 28px;
-      }
-
-      .interview-layout {
-        grid-template-columns: 1fr 400px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .interview-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .media-sidebar {
-        max-height: 400px;
-        border-left: none;
-        border-top: 1px solid rgba(99, 102, 241, 0.2);
-      }
-
-      .question-panel {
-        padding: 20px;
-      }
-
-      .question-text {
-        font-size: 24px;
-      }
-
-      .answer-text {
-        min-height: 120px;
-      }
-    }
-  </style>
+  <title>Interview - AI Mock Interview System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <!-- Animated Blobs -->
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-
-  <!-- Top Bar -->
-  <div class="topbar">
-    <div class="brand-section">
-      <span style="font-size: 24px;">🧠</span>
-      <div class="brand-title">AI Interview Test</div>
-    </div>
-    <div class="status-bar">
-      <div class="status-badge" id="progressBadge">
-        ◉ Question 1 of 10
-      </div>
-      <div class="timer-badge" id="timerBadge">
-        <span class="recording-indicator"></span>
-        ⏱️ 30:00
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Layout -->
-  <div class="interview-layout">
-    <!-- Left Panel - Large Camera -->
-    <div class="camera-panel">
-      <div class="video-container">
-        <video id="videoPreview" autoplay playsinline></video>
-        <div class="video-placeholder" id="videoPlaceholder">
-          📷<br>Camera Off
-        </div>
-      </div>
-      <div class="media-buttons">
-        <button class="media-btn enabled" id="cameraBtn" onclick="toggleCamera()">📷 Camera</button>
-        <button class="media-btn" id="micBtn" onclick="toggleMicrophone()">🎤 Mic</button>
-      </div>
-    </div>
-
-    <!-- Right Panel - Question & Answer -->
-    <div class="answer-panel">
-      <!-- Question -->
-      <div class="question-header">
-        <div class="question-badge" id="questionType">Behavioral Question</div>
-        <div class="question-text" id="questionText">Loading your interview question...</div>
-      </div>
-
-      <!-- Speech Status -->
-      <div class="speech-status" id="speechStatus">
-        <div class="listening-indicator inactive" id="listeningIndicator">
-          <div class="pulse-dot"></div>
-          <span id="statusText">Ready to record</span>
-        </div>
-      </div>
-
-      <!-- Answer Display -->
-      <div class="answer-display-section">
-        <div class="answer-label">
-          <span>✏️ Your Answer</span>
-          <span class="char-count" id="charCount">Words: 0</span>
-        </div>
-
-        <textarea id="answerText" class="answer-text" placeholder="Click 'Start Speaking' and say your answer..."></textarea>
-      </div>
-
-      <!-- Control Buttons -->
-      <div class="controls">
-        <button class="control-btn" id="startSpeakingBtn" onclick="startSpeechRecognition()">
-          🎤 Start Speaking
-        </button>
-        <button class="control-btn recording" id="stopSpeakingBtn" onclick="stopSpeechRecognition()" style="display: none;">
-          ◼ Stop
-        </button>
-        <button class="control-btn" onclick="clearAnswer()">
-          🗑️ Clear
-        </button>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="action-buttons">
-        <button class="btn btn-secondary" onclick="previousQuestion()">← Back</button>
-        <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn">
-          Next →
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // ==================== VARIABLES ====================
-    let currentQuestionIndex = 0;
-    let mediaStream = null;
-    let recognition = null;
-    let isListening = false;
-    let timeRemaining = 1800;
-    let answers = [];
-    let cameraEnabled = false;
-
-    const questions = [
-      { type: 'Behavioral', text: 'Tell me about a time when you had to work with a difficult team member. How did you handle it?' },
-      { type: 'Behavioral', text: 'Describe a project where you took initiative and led the team to success.' },
-      { type: 'Technical', text: 'Explain your approach to solving complex technical problems.' },
-      { type: 'Behavioral', text: 'Can you tell me about a failure you experienced and what you learned from it?' },
-      { type: 'Technical', text: 'How do you stay updated with the latest technologies and industry trends?' },
-      { type: 'Behavioral', text: 'Describe a situation where you had to meet a tight deadline under pressure.' },
-      { type: 'Behavioral', text: 'What are your short-term and long-term career goals?' },
-      { type: 'Technical', text: 'How would you approach debugging a complex system issue?' },
-      { type: 'Behavioral', text: 'Tell me why you are interested in this position and our company.' },
-      { type: 'Technical', text: 'Describe your ideal team environment and how you contribute to it.' }
-    ];
-
-    // ==================== SPEECH RECOGNITION ====================
-    function initSpeechRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert('Speech Recognition not supported in your browser. Use Chrome, Edge, or Safari.');
-        return;
-      }
-
-      recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-
-      recognition.onstart = function() {
-        isListening = true;
-        document.getElementById('startSpeakingBtn').style.display = 'none';
-        document.getElementById('stopSpeakingBtn').style.display = 'flex';
-        document.getElementById('listeningIndicator').classList.remove('inactive');
-        document.getElementById('statusText').textContent = '🎙️ Listening...';
-        document.getElementById('waveform').style.display = 'flex';
-        document.getElementById('answerText').classList.add('speaking');
-      };
-
-      recognition.onend = function() {
-        isListening = false;
-        document.getElementById('startSpeakingBtn').style.display = 'flex';
-        document.getElementById('stopSpeakingBtn').style.display = 'none';
-        document.getElementById('listeningIndicator').classList.add('inactive');
-        document.getElementById('statusText').textContent = '✓ Recording complete';
-        document.getElementById('waveform').style.display = 'none';
-        document.getElementById('answerText').classList.remove('speaking');
-      };
-
-      recognition.onresult = function(event) {
-        let interimTranscript = '';
-        let finalTranscript = '';
-
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript + ' ';
-          } else {
-            interimTranscript += transcript;
-          }
-        }
-
-        const textarea = document.getElementById('answerText');
-        textarea.value = textarea.value + finalTranscript + interimTranscript;
-        updateCharCount();
-      };
-
-      recognition.onerror = function(event) {
-        console.error('Speech error:', event.error);
-        document.getElementById('statusText').textContent = 'Error: ' + event.error;
-      };
-    }
-
-    function startSpeechRecognition() {
-      if (!recognition) {
-        initSpeechRecognition();
-      }
-      recognition.start();
-    }
-
-    function stopSpeechRecognition() {
-      if (recognition) {
-        recognition.stop();
-      }
-    }
-
-    function clearAnswer() {
-      document.getElementById('answerText').value = '';
-      updateCharCount();
-    }
-
-    function updateCharCount() {
-      const count = document.getElementById('answerText').value.length;
-      document.getElementById('charCount').textContent = count + ' characters';
-    }
-
-    // ==================== TIMER ====================
-    function updateTimer() {
-      const minutes = Math.floor(timeRemaining / 60);
-      const seconds = timeRemaining % 60;
-      document.getElementById('timerBadge').innerHTML = `
-        <span class="recording-indicator"></span>
-        ⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}
-      `;
-      
-      if (timeRemaining > 0) {
-        timeRemaining--;
-        setTimeout(updateTimer, 1000);
-      }
-    }
-
-    // ==================== CAMERA ====================
-    async function toggleCamera() {
-      if (cameraEnabled) {
-        if (mediaStream) {
-          mediaStream.getVideoTracks().forEach(track => track.stop());
-        }
-        document.getElementById('videoPreview').style.display = 'none';
-        document.getElementById('videoPlaceholder').style.display = 'flex';
-        document.getElementById('cameraBtn').classList.remove('enabled');
-        cameraEnabled = false;
-      } else {
-        try {
-          let stream = mediaStream;
-          if (!stream) {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            mediaStream = stream;
-          }
-          document.getElementById('videoPreview').srcObject = stream;
-          document.getElementById('videoPreview').style.display = 'block';
-          document.getElementById('videoPlaceholder').style.display = 'none';
-          document.getElementById('cameraBtn').classList.add('enabled');
-          cameraEnabled = true;
-        } catch (err) {
-          alert('Camera access denied. Please enable in browser settings.');
-        }
-      }
-    }
-
-    function toggleMicrophone() {
-      const btn = document.getElementById('micBtn');
-      btn.classList.toggle('enabled');
-    }
-
-    // ==================== QUESTIONS ====================
-    function loadQuestion() {
-      const q = questions[currentQuestionIndex];
-      document.getElementById('questionText').textContent = q.text;
-      document.getElementById('questionType').textContent = '● ' + q.type + ' Question';
-      document.getElementById('progressBadge').textContent = `◉ Question ${currentQuestionIndex + 1} of ${questions.length}`;
-      document.getElementById('answerText').value = '';
-      updateCharCount();
-    }
-
-    function nextQuestion() {
-      const answer = document.getElementById('answerText').value;
-      
-      if (!answer.trim()) {
-        alert('⚠️ Please provide an answer before proceeding.');
-        return;
-      }
-
-      answers[currentQuestionIndex] = {
-        question: questions[currentQuestionIndex].text,
-        answer: answer,
-        type: questions[currentQuestionIndex].type,
-        timestamp: new Date().toISOString()
-      };
-
-      currentQuestionIndex++;
-
-      if (currentQuestionIndex < questions.length) {
-        loadQuestion();
-      } else {
-        submitInterview();
-      }
-    }
-
-    function previousQuestion() {
-      if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        loadQuestion();
-      }
-    }
-
-    function submitInterview() {
-      const answer = document.getElementById('answerText').value;
-      if (answer.trim()) {
-        answers[currentQuestionIndex] = {
-          question: questions[currentQuestionIndex].text,
-          answer: answer,
-          type: questions[currentQuestionIndex].type,
-          timestamp: new Date().toISOString()
-        };
-      }
-
-      localStorage.setItem('interviewAnswers', JSON.stringify(answers));
-      localStorage.setItem('interviewCompleted', 'true');
-      localStorage.setItem('completedAt', new Date().toISOString());
-
-      window.location.href = 'feedback.html';
-    }
-
-    // ==================== INIT ====================
-    window.addEventListener('load', function() {
-      if (!localStorage.getItem('isAuthenticated')) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      loadQuestion();
-      updateTimer();
-      initSpeechRecognition();
-      toggleCamera(); // Auto-enable camera
-    });
-
-    // ==================== CLEANUP ====================
-    window.addEventListener('beforeunload', function(e) {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-      }
-      if (recognition) {
-        recognition.stop();
-      }
-    });
-
-    document.getElementById('answerText').addEventListener('input', updateCharCount);
-  </script>
-</body>
-</html>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #0A0F1C;
-      color: #FFFFFF;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Animated Blobs */
-    .blob {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.06;
-      pointer-events: none;
-      animation: blob-float 8s infinite ease-in-out;
-      z-index: 1;
-    }
-
-    .blob-1 {
-      width: 500px;
-      height: 500px;
-      background: #6366F1;
-      left: -250px;
-      top: 10%;
-    }
-
-    .blob-2 {
-      width: 400px;
-      height: 400px;
-      background: #10B981;
-      right: -200px;
-      bottom: 10%;
-      animation-delay: 2s;
-    }
-
-    @keyframes blob-float {
-      0%, 100% { transform: translate(0, 0); }
-      50% { transform: translate(30px, -30px); }
-    }
-
-    /* Top Bar */
-    .topbar {
-      background: rgba(17, 24, 39, 0.99);
-      backdrop-filter: blur(30px);
-      border-bottom: 1px solid rgba(99, 102, 241, 0.25);
-      padding: 18px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      z-index: 100;
-      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.12);
-    }
-
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .brand-title {
-      font-size: 20px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #6366F1 0%, #10B981 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .status-bar {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .status-badge {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #6366F1;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .timer-badge {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.05) 100%);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #FCA5A5;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .recording-indicator {
-      width: 8px;
-      height: 8px;
-      background: #EF4444;
-      border-radius: 50%;
-      animation: pulse-red 1s infinite;
-    }
-
-    @keyframes pulse-red {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    /* Main Layout */
-    .interview-layout {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 0;
-      position: relative;
-      z-index: 10;
-      overflow: hidden;
-    }
-
-    /* Left Panel - Questions */
-    .question-panel {
-      display: flex;
-      flex-direction: column;
-      padding: 40px;
-      overflow-y: auto;
-      background: rgba(10, 15, 28, 0.5);
-    }
-
-    .question-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      max-width: 800px;
-      margin: 0 auto;
-      width: 100%;
-      padding: 20px;
-    }
-
-    .question-header {
-      margin-bottom: 40px;
-      animation: slideInUp 400ms ease-out;
-    }
-
-    @keyframes slideInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .question-badge {
-      display: inline-block;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      color: #6366F1;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 16px;
-    }
-
-    .question-text {
-      font-size: 36px;
-      font-weight: 700;
-      line-height: 1.5;
-      color: #FFFFFF;
-      margin-bottom: 32px;
-      letter-spacing: -0.5px;
-    }
-
-    .question-context {
-      display: flex;
-      gap: 16px;
-      padding: 20px;
-      background: rgba(99, 102, 241, 0.05);
-      border: 1px solid rgba(99, 102, 241, 0.15);
-      border-radius: 10px;
-      margin-bottom: 30px;
-    }
-
-    .context-icon {
-      font-size: 24px;
-      flex-shrink: 0;
-    }
-
-    .context-text {
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.7);
-      line-height: 1.6;
-    }
-
-    /* Answer Input */
-    .answer-input-section {
-      margin-bottom: 30px;
-    }
-
-    .input-label {
-      display: flex;
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      color: rgba(255, 255, 255, 0.95);
-      align-items: center;
-      gap: 8px;
-      letter-spacing: 0.2px;
-    }
-
-    .input-tabs {
-      display: flex;
-      gap: 0;
-      margin-bottom: 0;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .tab-btn {
-      padding: 12px 20px;
-      background: rgba(255, 255, 255, 0.03);
-      border: none;
-      border-bottom: 3px solid transparent;
-      color: rgba(255, 255, 255, 0.5);
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 700;
-      transition: all 200ms ease;
-      border-radius: 8px 8px 0 0;
-    }
-
-    .tab-btn.active {
-      color: #6366F1;
-      border-bottom-color: #6366F1;
-      background: rgba(99, 102, 241, 0.08);
-    }
-
-    .tab-btn:hover {
-      color: #A5B4FC;
-      background: rgba(99, 102, 241, 0.05);
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 200px;
-      padding: 20px;
-      background: #1F2937;
-      border: 2px solid rgba(99, 102, 241, 0.2);
-      border-radius: 12px;
-      color: #FFFFFF;
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 15px;
-      line-height: 1.6;
-      resize: vertical;
-      transition: all 200ms ease;
-    }
-
-    textarea::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
-
-    textarea:focus {
-      outline: none;
-      border-color: #6366F1;
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
-      background: rgba(31, 41, 55, 0.9);
-    }
-
-    .input-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 12px;
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .recording-note {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #FCA5A5;
-    }
-
-    .recording-dot {
-      width: 6px;
-      height: 6px;
-      background: #EF4444;
-      border-radius: 50%;
-      animation: pulse-red 1s infinite;
-    }
-
-    /* Recording Controls */
-    .recording-controls {
-      display: flex;
-      gap: 12px;
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .record-btn {
-      flex: 1;
-      padding: 12px;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      border-radius: 8px;
-      color: #FCA5A5;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      transition: all 200ms ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .record-btn:hover {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: #FCA5A5;
-    }
-
-    .record-btn.recording {
-      background: #EF4444;
-      color: white;
-      border-color: #EF4444;
-    }
-
-    /* Action Buttons */
-    .action-buttons {
-      display: flex;
-      gap: 12px;
-      margin-top: 30px;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 200ms ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #6366F1 0%, #7C3AED 100%);
-      color: white;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-3px);
-      filter: brightness(1.15);
-      box-shadow: 0 16px 40px rgba(99, 102, 241, 0.4);
-    }
-
-    .btn-primary:active {
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      border: 2px solid rgba(255, 255, 255, 0.15);
-      color: rgba(255, 255, 255, 0.8);
-      font-weight: 600;
-    }
-
-    .btn-secondary:hover {
-      border-color: rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* Right Sidebar */
-    .media-sidebar {
-      background: rgba(17, 24, 39, 0.98);
-      border-left: 1px solid rgba(99, 102, 241, 0.2);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-
-    .sidebar-section {
-      padding: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .sidebar-section:last-child {
-      border-bottom: none;
-    }
-
-    .section-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #6366F1;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 16px;
-    }
-
-    .video-container {
-      width: 100%;
-      aspect-ratio: 9/16;
-      background: #0F1419;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 2px solid rgba(99, 102, 241, 0.3);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    }
-
-    #videoPreview {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .video-placeholder {
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.4);
-      text-align: center;
-    }
-
-    .media-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .media-btn {
-      padding: 13px;
-      background: rgba(99, 102, 241, 0.08);
-      border: 2px solid rgba(99, 102, 241, 0.25);
-      border-radius: 10px;
-      color: #A5B4FC;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-      transition: all 200ms ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-    }
-
-    .media-btn:hover {
-      background: rgba(99, 102, 241, 0.15);
-      border-color: #A5B4FC;
-    }
-
-    .media-btn.enabled {
-      background: #6366F1;
-      color: white;
-      border-color: #6366F1;
-    }
-
-    .media-btn.disabled {
-      background: rgba(239, 68, 68, 0.1);
-      color: #FCA5A5;
-      border-color: rgba(239, 68, 68, 0.3);
-      cursor: not-allowed;
-    }
-
-    .tips-box {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      padding: 16px;
-      border-radius: 10px;
-      margin-top: auto;
-    }
-
-    .tips-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #10B981;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .tips-list {
-      list-style: none;
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.6);
-      line-height: 1.8;
-    }
-
-    .tips-list li {
-      margin-bottom: 8px;
-      padding-left: 20px;
-      position: relative;
-    }
-
-    .tips-list li::before {
-      content: '✓';
-      color: #10B981;
-      font-weight: 700;
-      position: absolute;
-      left: 0;
-    }
-
-    /* Footer */
-    .footer {
-      background: rgba(17, 24, 39, 0.95);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 16px 32px;
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.4);
-      text-align: center;
-      position: relative;
-      z-index: 10;
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgba(99, 102, 241, 0.3);
-      border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(99, 102, 241, 0.5);
-    }
-
-    /* Responsive */
-    @media (max-width: 1200px) {
-      .question-text {
-        font-size: 24px;
-      }
-
-      .interview-layout {
-        grid-template-columns: 1fr 350px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .interview-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .media-sidebar {
-        max-height: 400px;
-        border-left: none;
-        border-top: 1px solid rgba(99, 102, 241, 0.2);
-      }
-
-      .question-panel {
-        padding: 20px;
-      }
-
-      .question-text {
-        font-size: 20px;
-      }
-
-      textarea {
-        min-height: 120px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <!-- Animated Blobs -->
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-
-  <!-- Top Bar -->
-  <div class="topbar">
-    <div class="brand-section">
-      <span style="font-size: 24px;">🧠</span>
-      <div class="brand-title">AI Interview Test</div>
-    </div>
-    <div class="status-bar">
-      <div class="status-badge" id="progressBadge">
-        ◉ Question 1 of 10
-      </div>
-      <div class="timer-badge" id="timerBadge">
-        <span class="recording-indicator"></span>
-        ⏱️ 30:00
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Layout -->
-  <div class="interview-layout">
-    <!-- Question Panel -->
-    <div class="question-panel">
-      <div class="question-container">
-        <div class="question-header">
-          <div class="question-badge" id="questionType">Behavioral Question</div>
-          <div class="question-text" id="questionText">Loading your interview question...</div>
-          <div class="question-context">
-            <div class="context-icon">💡</div>
-            <div class="context-text">Take your time to provide a thoughtful, detailed response. Speak clearly and maintain eye contact with the camera.</div>
-          </div>
-        </div>
-
-        <!-- Answer Section -->
-        <div class="answer-input-section">
-          <div class="input-label">
-            <span>📝 Your Response</span>
-            <span id="charBadge" style="font-size: 11px; color: #6366F1;">(0 characters)</span>
-          </div>
-
-          <div class="input-tabs">
-            <button class="tab-btn active" onclick="switchTab('text')">Type Text</button>
-            <button class="tab-btn" onclick="switchTab('voice')">🎤 Voice Note</button>
-          </div>
-
-          <div id="textTab">
-            <textarea id="answerText" placeholder="Type your detailed response here..."></textarea>
-            <div class="input-footer">
-              <span>💬 Text mode - Type your complete answer</span>
-              <span class="recording-note">
-                <span class="recording-dot"></span>
-                Monitored
-              </span>
-            </div>
-          </div>
-
-          <div id="voiceTab" style="display: none;">
-            <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 8px; padding: 20px; text-align: center;">
-              <div style="font-size: 40px; margin-bottom: 12px;">🎤</div>
-              <div style="font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 12px;">Voice Response Mode</div>
-              <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6); margin-bottom: 20px;">Click record below. Your voice will be captured and analyzed.</div>
-              <button class="record-btn" id="recordBtn" onclick="toggleRecording()">
-                 ● Start Recording
-              </button>
-            </div>
-          </div>
-
-          <div class="recording-controls">
-            <button class="record-btn" id="recordingBtn" onclick="toggleRecording()" style="display: none;">
-              <span class="recording-dot"></span>
-              Recording... (Click to Stop)
-            </button>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-          <button class="btn btn-secondary" onclick="previousQuestion()">← Back</button>
-          <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn">
-            Next Question →
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Media Sidebar -->
-    <div class="media-sidebar">
-      <!-- Camera Feed -->
-      <div class="sidebar-section">
-        <div class="section-title">📹 Camera Feed</div>
-        <div class="video-container">
-          <video id="videoPreview" autoplay playsinline></video>
-          <div class="video-placeholder" id="videoPlaceholder">
-            📷<br>Camera Disabled
-          </div>
-        </div>
-        <div class="media-buttons">
-          <button class="media-btn enabled" id="cameraBtn" onclick="toggleCamera()">📷 Camera</button>
-          <button class="media-btn" id="micBtn" onclick="toggleMicrophone()">🎤 Mic</button>
-        </div>
-      </div>
-
-      <!-- Tips & Guidance -->
-      <div class="sidebar-section">
-        <div class="tips-box">
-          <div class="tips-title">
-            💡 Preparation Tips
-          </div>
-          <ul class="tips-list">
-            <li>Use STAR for behavioral questions</li>
-            <li>Take a 5-second pause to think</li>
-            <li>Speak clearly and confidently</li>
-            <li>Maintain good posture</li>
-            <li>Avoid filler words (um, uh)</li>
-            <li>Provide concrete examples</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <div class="footer">
-    <p>🔒 Your responses are being recorded and analyzed. | ⚙️ All answers are auto-saved</p>
-  </div>
-
-  <script>
-    // ==================== INITIALIZATION ====================
-    let currentQuestionIndex = 0;
-    let isRecording = false;
-    let cameraEnabled = false;
-    let micEnabled = false;
-    let mediaStream = null;
-    let timeRemaining = 1800; // 30 minutes
-    let answers = [];
-
-    const questions = [
-      { type: 'Behavioral', text: 'Tell me about a time when you had to work with a difficult team member. How did you handle it?' },
-      { type: 'Behavioral', text: 'Describe a project where you took initiative and led the team to success.' },
-      { type: 'Technical', text: 'Explain your approach to solving complex technical problems.' },
-      { type: 'Behavioral', text: 'Can you tell me about a failure you experienced and what you learned from it?' },
-      { type: 'Technical', text: 'How do you stay updated with the latest technologies and industry trends?' },
-      { type: 'Behavioral', text: 'Describe a situation where you had to meet a tight deadline under pressure.' },
-      { type: 'Behavioral', text: 'What are your short-term and long-term career goals?' },
-      { type: 'Technical', text: 'How would you approach debugging a complex system issue?' },
-      { type: 'Behavioral', text: 'Tell me why you are interested in this position and our company.' },
-      { type: 'Technical', text: 'Describe your ideal team environment and how you contribute to it.' }
-    ];
-
-    // ==================== TIMER ====================
-    function updateTimer() {
-      const minutes = Math.floor(timeRemaining / 60);
-      const seconds = timeRemaining % 60;
-      document.getElementById('timerBadge').innerHTML = `
-        <span class="recording-indicator"></span>
-        ⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}
-      `;
-      
-      if (timeRemaining > 0) {
-        timeRemaining--;
-        setTimeout(updateTimer, 1000);
-      } else {
-        submitInterview();
-      }
-    }
-
-    // ==================== UI UPDATES ====================
-    function loadQuestion() {
-      const q = questions[currentQuestionIndex];
-      document.getElementById('questionText').textContent = q.text;
-      document.getElementById('questionType').textContent = '● ' + q.type + ' Question';
-      document.getElementById('progressBadge').textContent = `◉ Question ${currentQuestionIndex + 1} of ${questions.length}`;
-      document.getElementById('answerText').value = '';
-      document.getElementById('charBadge').textContent = '(0 characters)';
-      
-      // Smooth animation
-      document.querySelector('.question-header').style.animation = 'slideInUp 400ms ease-out';
-    }
-
-    function switchTab(tab) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-      
-      document.getElementById('textTab').style.display = tab === 'text' ? 'block' : 'none';
-      document.getElementById('voiceTab').style.display = tab === 'voice' ? 'block' : 'none';
-    }
-
-    // ==================== CAMERA & MICROPHONE ====================
-    async function toggleCamera() {
-      if (cameraEnabled) {
-        // Disable camera
-        if (mediaStream) {
-          mediaStream.getVideoTracks().forEach(track => track.stop());
-        }
-        document.getElementById('videoPreview').style.display = 'none';
-        document.getElementById('videoPlaceholder').style.display = 'flex';
-        document.getElementById('cameraBtn').classList.remove('enabled');
-        document.getElementById('cameraBtn').textContent = '📷 Camera';
-        cameraEnabled = false;
-      } else {
-        // Enable camera
-        try {
-          let stream = mediaStream;
-          if (!stream) {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            mediaStream = stream;
-          }
-          document.getElementById('videoPreview').srcObject = stream;
-          document.getElementById('videoPreview').style.display = 'block';
-          document.getElementById('videoPlaceholder').style.display = 'none';
-          document.getElementById('cameraBtn').classList.add('enabled');
-          document.getElementById('cameraBtn').textContent = '📷 Recording';
-          cameraEnabled = true;
-        } catch (err) {
-          alert('❌ Camera access denied. Please enable camera permissions in your browser settings.');
-          console.error('Camera error:', err);
-        }
-      }
-    }
-
-    function toggleMicrophone() {
-      if (micEnabled) {
-        document.getElementById('micBtn').classList.remove('enabled');
-        document.getElementById('micBtn').textContent = '🎤 Mic';
-        micEnabled = false;
-      } else {
-        document.getElementById('micBtn').classList.add('enabled');
-        document.getElementById('micBtn').textContent = '🎤 On';
-        micEnabled = true;
-      }
-    }
-
-    async function toggleRecording() {
-      if (isRecording) {
-        isRecording = false;
-        document.getElementById('recordBtn').style.display = 'inline-flex';
-        document.getElementById('recordingBtn').style.display = 'none';
-        document.getElementById('recordBtn').textContent = '● Start Recording';
-      } else {
-        // Request microphone access
-        try {
-          if (!mediaStream) {
-            mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          }
-          isRecording = true;
-          document.getElementById('recordBtn').style.display = 'none';
-          document.getElementById('recordingBtn').style.display = 'inline-flex';
-        } catch (err) {
-          alert('❌ Microphone access denied. Please enable microphone permissions in your browser settings.');
-        }
-      }
-    }
-
-    // ==================== CHARACTER COUNTER ====================
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('answerText').addEventListener('input', function() {
-        const length = this.value.length;
-        document.getElementById('charBadge').textContent = `(${length} characters)`;
-      });
-    });
-
-    // ==================== NAVIGATION ====================
-    function nextQuestion() {
-      const textAnswer = document.getElementById('answerText').value;
-      
-      if (!textAnswer.trim()) {
-        alert('⚠️ Please provide an answer before proceeding to the next question.');
-        return;
-      }
-
-      answers[currentQuestionIndex] = {
-        question: questions[currentQuestionIndex].text,
-        answer: textAnswer,
-        type: questions[currentQuestionIndex].type,
-        recorded_at: new Date().toISOString()
-      };
-
-      currentQuestionIndex++;
-
-      if (currentQuestionIndex < questions.length) {
-        loadQuestion();
-      } else {
-        submitInterview();
-      }
-    }
-
-    function previousQuestion() {
-      if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        loadQuestion();
-      }
-    }
-
-    function submitInterview() {
-      // Save all answers to localStorage
-      const textAnswer = document.getElementById('answerText').value;
-      if (textAnswer.trim()) {
-        answers[currentQuestionIndex] = {
-          question: questions[currentQuestionIndex].text,
-          answer: textAnswer,
-          type: questions[currentQuestionIndex].type,
-          recorded_at: new Date().toISOString()
-        };
-      }
-
-      localStorage.setItem('interviewAnswers', JSON.stringify(answers));
-      localStorage.setItem('interviewCompleted', 'true');
-      localStorage.setItem('completedAt', new Date().toISOString());
-
-      // Redirect to feedback/results
-      window.location.href = 'feedback.html';
-    }
-
-    // ==================== INIT ====================
-    window.addEventListener('load', function() {
-      if (!localStorage.getItem('isAuthenticated')) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      loadQuestion();
-      updateTimer();
-
-      // Auto-enable camera on load
-      toggleCamera();
-    });
-
-    // ==================== CLEANUP ====================
-    window.addEventListener('beforeunload', function(e) {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-      }
-    });
-  </script>
-</body>
-</html>
+<body class="dark">
   <header class="topbar">
     <div class="brand">
       <i class="fas fa-brain"></i>
@@ -3798,10 +1448,10 @@
       </div>
       <div class="video-wrap">
         <video id="interviewCamera" autoplay playsinline muted></video>
-        <div id="cameraError" class="camera-error" style="display:none;">
-          <i class="fas fa-exclamation-triangle"></i>
-          <p>Camera access denied or unavailable</p>
-        </div>
+        <div id="cameraError" class="camera-error" style="display:none;"></div>
+        <button id="retryCameraBtn" class="btn-retry-camera-overlay" style="display:none; position: absolute; bottom: 20px; right: 20px; background: linear-gradient(135deg, #6366F1, #5555ff); color: white; border: none; padding: 14px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px; z-index: 10; box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6); text-transform: uppercase; letter-spacing: 0.5px;">
+          🎥 Enable Camera
+        </button>
       </div>
     </section>
 

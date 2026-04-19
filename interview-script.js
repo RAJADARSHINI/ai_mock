@@ -31,6 +31,7 @@ const timerEl = document.getElementById('timer');
 const statusEl = document.getElementById('status');
 const videoEl = document.getElementById('interviewCamera');
 const cameraErrorEl = document.getElementById('cameraError');
+const retryCameraBtn = document.getElementById('retryCameraBtn');
 const questionTextEl = document.getElementById('questionText');
 const questionNumberEl = document.getElementById('questionNumber');
 const transcriptEl = document.getElementById('transcript');
@@ -143,20 +144,33 @@ async function init() {
   // Load first question
   loadQuestion(0);
   
-  // Initialize camera
-  initCamera();
-  
   // Initialize speech recognition
   initSpeechRecognition();
-  
-  // Start timer
-  startTimer();
   
   // Setup event listeners
   setupEventListeners();
   
-  // Update status
-  updateStatus('Ready to start');
+  // MANDATORY CAMERA: Disable all controls until camera is ready
+  disableInterviewControls();
+  updateStatus('🎥 Camera REQUIRED - Requesting access...');
+  
+  // Try to initialize camera - MANDATORY
+  initCamera().then(success => {
+    if (success) {
+      console.log('✅ Camera initialized successfully');
+      updateStatus('✅ Camera Ready - Interview Active');
+      
+      // Enable controls and start timer
+      enableInterviewControls();
+      startTimer();
+    } else {
+      console.error('❌ Camera initialization failed');
+      updateStatus('❌ CAMERA REQUIRED - Please enable camera');
+    }
+  }).catch(err => {
+    console.error('❌ Camera error:', err);
+    updateStatus('❌ CAMERA REQUIRED - Please enable camera');
+  });
 }
 
 // ========================================
@@ -209,66 +223,148 @@ async function checkMicrophonePermission() {
 
 async function initCamera() {
   try {
-    // Check permission before attempting to access camera
-    const permissionState = await checkCameraPermission();
-    
-    if (permissionState === 'denied') {
-      throw new Error('NotAllowedError');
-    }
-    
     // Check if getUserMedia is supported
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.error('getUserMedia not supported');
       throw new Error('NotSupportedError');
     }
     
+    console.log('🎥 Requesting camera access...');
+    console.log('📹 Video element reference:', videoEl);
+    console.log('📹 Video element display:', window.getComputedStyle(videoEl).display);
+    
     state.mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: 1280, height: 720 },
+      video: { 
+        width: { ideal: 1280 }, 
+        height: { ideal: 720 },
+        facingMode: 'user'
+      }, 
       audio: false
     });
     
+    console.log('✅ Camera stream obtained successfully');
+    console.log('📊 Stream tracks:', state.mediaStream.getTracks());
+    
+    // Assign stream to video element
+    console.log('📺 Assigning stream to video element...');
+    console.log('📺 Video element parent:', videoEl.parentElement);
+    console.log('📺 Video element parent size:', videoEl.parentElement.offsetWidth, 'x', videoEl.parentElement.offsetHeight);
+    
     videoEl.srcObject = state.mediaStream;
+    console.log('✅ Stream assigned to video element');
+    console.log('📺 Stream:', state.mediaStream);
+    console.log('📺 Tracks:', state.mediaStream.getTracks().map(t => t.label));
+    
+    // Force absolute positioning to fill container
+    const parent = videoEl.parentElement;
+    videoEl.style.position = 'absolute';
+    videoEl.style.top = '0';
+    videoEl.style.left = '0';
+    videoEl.style.display = 'block !important';
+    videoEl.style.width = '100%';
+    videoEl.style.height = '100%';
+    videoEl.style.objectFit = 'cover';
+    videoEl.style.backgroundColor = '#000';
+    videoEl.style.zIndex = '1';
+    console.log('✅ Video element styling applied');
+    
+    // Hide error overlay so video is visible
+    cameraErrorEl.style.display = 'none';
+    cameraErrorEl.style.zIndex = '0';
+    
+    // Wait longer for stream to be ready
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Play the video
+    try {
+      console.log('🎬 Attempting to play video...');
+      const playPromise = videoEl.play();
+      if (playPromise !== undefined) {
+        await playPromise;
+        console.log('✅ Video playing successfully');
+        console.log('🎥 Video is playing:', !videoEl.paused);
+        console.log('🎥 Video dimensions:', videoEl.videoWidth, 'x', videoEl.videoHeight);
+      }
+    } catch (playErr) {
+      console.error('❌ Video play error:', playErr);
+      // Try playing again
+      setTimeout(() => {
+        videoEl.play().catch(e => console.error('Retry play failed:', e));
+      }, 100);
+    }
+    
+    // Monitor video readiness
+    videoEl.onloadedmetadata = function() {
+      console.log('✅ Video metadata loaded - dimensions:', videoEl.videoWidth, 'x', videoEl.videoHeight);
+    };
+    
     state.isCameraOn = true;
     camToggleBtn.classList.add('active');
     cameraErrorEl.style.display = 'none';
+    if (retryCameraBtn) {
+      retryCameraBtn.style.display = 'none';
+    }
+    updateStatus('🎥 Camera is ON');
     
-    // Enable interview controls when camera is successfully initialized
-    enableInterviewControls();
+    console.log('✅ Camera initialized successfully - Face should be visible now!');
+    return true;
     
   } catch (error) {
-    console.error('Camera access error:', error);
-    cameraErrorEl.style.display = 'flex';
-    camToggleBtn.classList.remove('active');
-    state.isCameraOn = false;
+    console.error('❌ Camera access error:', error);
+    console.error('📋 Error name:', error.name);
+    console.error('📋 Error message:', error.message);
     
-    // Handle specific error types
-    let errorMessage = 'Camera access is required to attend the interview.';
+    state.isCameraOn = false;
+    camToggleBtn.classList.remove('active');
+    
+    // Show error in camera panel but don't block the interview
+    let errorMessage = 'Camera unavailable';
+    let errorHTML = '<i class="fas fa-exclamation-triangle"></i><p>Camera unavailable</p>';
     
     if (error.name === 'NotAllowedError' || error.message === 'NotAllowedError') {
-      errorMessage = 'Camera access is required to attend the interview. Please enable it in browser settings and refresh the page.';
-      cameraErrorEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Camera access denied</p>';
-      updateStatus('Camera access denied');
+      errorMessage = 'Camera permission denied.';
+      errorHTML = `
+        <i class="fas fa-lock"></i>
+        <p style="margin-bottom: 8px; color: #ff4444;">🚫 CAMERA REQUIRED</p>
+        <small style="display: block; margin-bottom: 12px; color: #fff;">
+          <strong>Camera is MANDATORY for this interview!</strong><br/><br/>
+          <strong style="color: #ffd700;">Step 1:</strong> Windows Settings<br/>
+          <strong style="color: #ffd700;">Step 2:</strong> Privacy & security → Camera<br/>
+          <strong style="color: #ffd700;">Step 3:</strong> Toggle Camera ON<br/>
+          <strong style="color: #ffd700;">Step 4:</strong> Allow your browser<br/>
+          <strong style="color: #ffd700;">Step 5:</strong> Click "Retry Camera" ↓
+        </small>
+      `;
+      updateStatus('🚫 CAMERA PERMISSION DENIED - Camera is mandatory');
     } else if (error.name === 'NotFoundError') {
-      errorMessage = 'No camera found. Please connect a camera device and refresh the page.';
-      cameraErrorEl.innerHTML = '<i class="fas fa-video-slash"></i><p>No camera found</p>';
-      updateStatus('No camera found');
+      errorMessage = 'No camera found on this device.';
+      errorHTML = '<i class="fas fa-video-slash"></i><p style="color: #ff4444;">❌ NO CAMERA FOUND</p><small>A camera is REQUIRED. Connect a webcam and retry.</small>';
+      updateStatus('❌ No camera - cannot proceed');
     } else if (error.name === 'NotReadableError') {
-      errorMessage = 'Camera is already in use by another application. Please close other applications and refresh the page.';
-      cameraErrorEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Camera in use</p>';
-      updateStatus('Camera in use');
+      errorMessage = 'Camera is already in use by another app.';
+      errorHTML = '<i class="fas fa-exclamation-triangle"></i><p style="color: #ff4444;">⚠️ CAMERA IN USE</p><small>Close other apps using camera and click Retry</small>';
+      updateStatus('⚠️ Camera in use - close other apps and retry');
     } else if (error.name === 'NotSupportedError' || error.message === 'NotSupportedError') {
-      errorMessage = 'Camera is not supported in this browser. Please use Chrome, Edge, or Firefox.';
-      cameraErrorEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Browser not supported</p>';
-      updateStatus('Browser not supported');
+      errorMessage = 'Camera not supported in this browser.';
+      errorHTML = '<i class="fas fa-exclamation-triangle"></i><p style="color: #ff4444;">⚠️ NOT SUPPORTED</p><small>Try Chrome, Edge, or Firefox</small>';
+      updateStatus('⚠️ Camera not supported - try different browser');
     } else {
-      cameraErrorEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Camera unavailable</p>';
-      updateStatus('Camera unavailable');
+      errorHTML = '<i class="fas fa-exclamation-triangle"></i><p style="color: #ff4444;">❌ CAMERA ERROR</p><small>Error: ' + error.message + '</small>';
+      updateStatus('❌ Camera error - cannot proceed');
     }
     
-    // Show clear popup message
-    alert(errorMessage);
+    cameraErrorEl.innerHTML = errorHTML;
+    cameraErrorEl.style.display = 'flex';
     
-    // Disable interview controls until camera is enabled
-    disableInterviewControls();
+    // Show retry button
+    if (retryCameraBtn) {
+      retryCameraBtn.style.display = 'block';
+    }
+    
+    console.warn('❌ ' + errorMessage);
+    console.error('Camera error details:', error);
+    
+    return false;
   }
 }
 
@@ -293,18 +389,21 @@ function toggleCamera() {
     }
     state.isCameraOn = false;
     camToggleBtn.classList.remove('active');
-    cameraErrorEl.style.display = 'flex';
-    cameraErrorEl.innerHTML = '<i class="fas fa-camera-slash"></i><p>Camera is off</p>';
-    
-    // Show popup and disable controls
-    alert('Camera access is required to attend the interview. Please enable the camera to continue.');
-    disableInterviewControls();
+    cameraErrorEl.style.display = 'none'; // Hide error, just stop video
+    updateStatus('Camera turned off');
+    console.log('📹 Camera turned off');
   } else {
-    // Turn on camera
-    initCamera();
-    if (state.isCameraOn) {
-      enableInterviewControls();
-    }
+    // Turn on camera - make it async
+    console.log('🎬 Attempting to enable camera...');
+    initCamera().then(success => {
+      if (success) {
+        console.log('✅ Camera enabled successfully');
+      } else {
+        console.log('❌ Camera failed to enable');
+      }
+    }).catch(err => {
+      console.error('❌ Camera error:', err);
+    });
   }
 }
 
@@ -936,6 +1035,41 @@ function setupEventListeners() {
   
   // Camera toggle
   camToggleBtn.addEventListener('click', toggleCamera);
+  
+  // Retry camera button
+  if (retryCameraBtn) {
+    retryCameraBtn.addEventListener('click', async () => {
+      console.log('🔄 Retrying camera access (MANDATORY)...');
+      retryCameraBtn.disabled = true;
+      retryCameraBtn.textContent = 'Retrying...';
+      updateStatus('🔄 Retrying camera access...');
+      
+      // Close the last camera stream if any
+      if (state.mediaStream) {
+        state.mediaStream.getTracks().forEach(track => track.stop());
+        state.mediaStream = null;
+      }
+      
+      const success = await initCamera();
+      if (success) {
+        console.log('✅ Camera retry successful - MANDATORY camera enabled');
+        updateStatus('✅ Camera Enabled - Starting Interview');
+        
+        // Enable interview controls NOW
+        enableInterviewControls();
+        loadQuestion(0);
+        initSpeechRecognition();
+        startTimer();
+        
+        retryCameraBtn.textContent = 'Retry Camera';
+      } else {
+        console.log('❌ Camera retry failed');
+        updateStatus('❌ Camera retry failed - Check Settings and try again');
+        retryCameraBtn.textContent = 'Retry Camera';
+      }
+      retryCameraBtn.disabled = false;
+    });
+  }
   
   // Microphone toggle for speech recording
   micToggleBtn.addEventListener('click', toggleMicrophone);

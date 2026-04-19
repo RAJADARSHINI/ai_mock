@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Mock Interview - Interview Session</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="interview-new.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <i class="fas fa-brain"></i>
+        <span>AI Mock Interview</span>
+      </div>
+      
+      <div class="navbar-center">
+        <div class="timer-badge">
+          <i class="fas fa-clock"></i>
+          <span id="timer">30:00</span>
+        </div>
+      </div>
+      
+      <div class="navbar-right">
+        <div id="cameraStatus" class="status-indicator">
+          <span class="status-dot"></span>
+          <span id="statusText">Initializing camera...</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <!-- Left Column: Camera -->
+    <section class="column column-left">
+      <div class="camera-card">
+        <div class="camera-header">
+          <h2>Your Interview</h2>
+          <div id="recordingIndicator" class="recording-indicator" style="display: none;">
+            <span class="record-dot"></span>
+            Recording
+          </div>
+        </div>
+
+        <div class="camera-container">
+          <video id="interviewCamera" class="camera-video"></video>
+          
+          <!-- Empty State: Camera Off -->
+          <div id="cameraEmpty" class="camera-empty">
+            <div class="empty-icon">
+              <i class="fas fa-camera"></i>
+            </div>
+            <h3>Camera Access Needed</h3>
+            <p>Enable your camera to begin the interview. Your video is not stored or recorded.</p>
+            <button id="enableCameraBtn" class="btn btn-primary btn-lg">
+              <i class="fas fa-video"></i>
+              Enable Camera
+            </button>
+            <div id="cameraError" class="error-message" style="display: none;"></div>
+          </div>
+
+          <!-- Recording Indicator -->
+          <div id="recordingBadge" class="recording-badge" style="display: none;">
+            <span class="record-dot"></span>
+            <span>LIVE</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Interview -->
+    <section class="column column-right">
+      <!-- Question Card -->
+      <div class="card question-card">
+        <div class="card-header">
+          <h3>
+            <span class="question-number">Question <span id="questionNum">1</span>/10</span>
+          </h3>
+        </div>
+        <div id="questionText" class="question-content">
+          Loading your first question...
+        </div>
+        <div class="question-nav" id="questionNav" style="display: none;">
+          <button id="prevBtn" class="btn btn-icon">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span id="questionCount" class="question-counter">1 / 10</span>
+          <button id="nextBtn" class="btn btn-icon">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Answer Card -->
+      <div class="card answer-card">
+        <div class="card-header">
+          <h3>Your Answer</h3>
+          <div class="card-actions">
+            <button id="micBtn" class="btn btn-icon" title="Use microphone">
+              <i class="fas fa-microphone"></i>
+            </button>
+            <button id="clearBtn" class="btn btn-icon" title="Clear answer">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="answer-input-wrapper">
+          <textarea 
+            id="answerText" 
+            class="answer-input"
+            placeholder="Type your answer here or use the microphone button to record..."
+            rows="6"
+          ></textarea>
+          
+          <div id="listeningIndicator" class="listening-indicator" style="display: none;">
+            <div class="listening-pulse"></div>
+            <span>Listening...</span>
+          </div>
+
+          <div class="word-count-bar">
+            <span>Words: <strong id="wordCount">0</strong>/500</span>
+            <div class="progress-bar">
+              <div id="wordProgress" class="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="answer-actions">
+          <button id="submitNextBtn" class="btn btn-primary btn-block">
+            <span>Submit & Next</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit Final Button -->
+      <button id="submitFinalBtn" class="btn btn-success btn-block btn-lg" style="display: none;">
+        <i class="fas fa-check-circle"></i>
+        <span>Complete Interview & Get Feedback</span>
+      </button>
+    </section>
+  </main>
+
+  <!-- Toast Notifications -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="interview-new.js"></script>
+</body>
+</html>
